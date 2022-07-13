@@ -47,61 +47,22 @@ module "icse_vpc_network" {
 ##############################################################################
 
 ##############################################################################
-# Detailed Network ACL Configuration
+# Edge VPC
 ##############################################################################
 
-locals {
-  all_network_acl_list = flatten([
-    # For each VPC network
-    for network in module.icse_vpc_network.vpc_networks :
-    [
-      # For each ACL in that network
-      for network_acl in network.network_acls :
-      # Create an object with existing data (name, id, first_rule_id) and and shortname
-      merge(network_acl, {
-        shortname = replace(network_acl.name, "/${var.prefix}-|-acl/", "")
-      })
-    ]
-  ])
-}
-
-module "detailed_acl_rules" {
-  source                           = "github.com/Cloud-Schematics/detailed-network-acl-rules/detailed_acl_rules_module"
-  network_acls                     = local.all_network_acl_list
-  network_cidr                     = "10.0.0.0/8"
-  apply_new_rules_before_old_rules = var.apply_new_rules_before_old_rules
-  deny_all_tcp_ports               = var.deny_all_tcp_ports
-  deny_all_udp_ports               = var.deny_all_udp_ports
-  get_detailed_acl_rules_from_json = var.get_detailed_acl_rules_from_json
-  detailed_acl_rules               = var.detailed_acl_rules
-  acl_rule_json                    = file("./json-config/template-acl-rules.json")
-}
-
-##############################################################################
-
-##############################################################################
-# Virtual Private Endpoints
-##############################################################################
-
-module "vpe_subnets" {
-  source           = "./config_modules/get_subnets"
-  for_each         = module.icse_vpc_network.vpc_networks
-  subnet_zone_list = each.value.subnet_zone_list
-  regex            = "-vpe-"
-}
-
-module "virtual_private_endpoints" {
-  source             = "github.com/Cloud-Schematics/vpe-module"
-  for_each           = toset(var.enable_virtual_private_endpoints == true ? var.vpcs_create_endpoint_gateway_on_vpe_tier : [])
-  prefix             = var.prefix
-  region             = var.region
-  vpc_name           = each.key
-  vpc_id             = module.icse_vpc_network.vpc_networks[each.key].id
-  subnet_zone_list   = module.vpe_subnets[each.key].subnets
-  resource_group_id  = local.resource_group_vpc_map[each.key]
-  service_endpoints  = "private"
-  cloud_services     = var.vpe_services
-  security_group_ids = null
+module "edge_vpc" {
+  source                     = "./edge_vpc"
+  prefix                     = var.prefix
+  tags                       = var.tags
+  resource_group_id          = local.management_rg
+  region                     = var.region
+  zones                      = var.zones
+  add_cluster_rules          = var.add_cluster_rules
+  global_inbound_allow_list  = var.global_inbound_allow_list
+  global_outbound_allow_list = var.global_outbound_allow_list
+  global_inbound_deny_list   = var.global_inbound_deny_list
+  global_outbound_deny_list  = var.global_outbound_deny_list
+  vpn_firewall_type          = "vpn-and-waf"
 }
 
 ##############################################################################

@@ -28,7 +28,7 @@ locals {
 ##############################################################################
 
 module "vsi_deployment_map" {
-  source = "./config_modules/list_to_map"
+  source = "github.com/Cloud-Schematics/list-to-map"
   list = flatten([
     for network in var.vsi_vpcs :
     [
@@ -92,11 +92,11 @@ module "vsi_deployment" {
   subnet_zone_list           = module.vsi_subnets[each.key].subnets
   deployment_name            = "${each.key}-vsi"
   boot_volume_encryption_key = ibm_kms_key.vsi_key.crn
-  primary_security_group_ids = [module.vsi_security_groups[each.key].groups[0].id]
+  primary_security_group_ids = [module.security_groups[each.key].groups[0].id]
   ssh_key_ids                = [local.template_ssh_key_id]
   # force await of additional security group rules to ensure network connectivity
   # is set up before virtual server creation.
-  depends_on = [module.quickstart_vsi_detailed_security_group_rules]
+  depends_on = [module.advanced_setup]
 }
 
 ##############################################################################

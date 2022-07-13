@@ -3,11 +3,11 @@
 ##############################################################################
 
 locals {
-  vsi_json = jsondecode(file("./json-config/template-virtual-servers.json"))
+  vsi_json = jsondecode(file("${path.module}/json-config/template-virtual-servers.json"))
 }
 
 module "custom_vsi_map" {
-  source = "./config_modules/list_to_map"
+  source = "github.com/Cloud-Schematics/list-to-map"
   list = (
     var.use_detailed_vsi_deployment_json != true
     ? var.detailed_vsi_deployments
@@ -25,7 +25,7 @@ module "custom_vsi_map" {
 module "custom_vsi_subnets" {
   source           = "./config_modules/get_subnets"
   for_each         = module.custom_vsi_map.value
-  subnet_zone_list = module.icse_vpc_network.vpc_networks[each.value.vpc_name].subnet_zone_list
+  subnet_zone_list = var.vpc_modules[each.value.vpc_name].subnet_zone_list
   regex = join("|",
     flatten(
       [
@@ -44,7 +44,7 @@ module "custom_vsi_subnets" {
 module "custom_vsi_secondary_subnets" {
   source           = "./config_modules/get_subnets"
   for_each         = module.custom_vsi_map.value
-  subnet_zone_list = module.icse_vpc_network.vpc_networks[each.value.vpc_name].subnet_zone_list
+  subnet_zone_list = var.vpc_modules[each.value.vpc_name].subnet_zone_list
   regex = join("|",
     flatten(
       [
@@ -67,19 +67,19 @@ module "custom_vsi_secondary_subnets" {
 ##############################################################################
 
 module "custom_deployments" {
-  source                           = "github.com/Cloud-Schematics/icse-vsi-deployment"
-  for_each                         = module.custom_vsi_map.value
-  prefix                           = var.prefix
-  tags                             = var.tags
-  vpc_id                           = module.icse_vpc_network.vpc_networks[each.value.vpc_name].id
-  subnet_zone_list                 = module.custom_vsi_subnets[each.key].subnets
-  secondary_subnet_zone_list       = module.custom_vsi_secondary_subnets[each.key].subnets
-  deployment_name                  = "${each.value.vpc_name}-${each.key}"
-  resource_group_id                = lookup(each.value, "resource_group_id", null)
-  vsi_per_subnet                   = lookup(each.value, "vsi_per_subnet", null)
-  ssh_key_ids                      = [
-    for ssh_key in each.value.ssh_key_ids:
-    ssh_key == "default" ? local.template_ssh_key_id : ssh_key
+  source                     = "github.com/Cloud-Schematics/icse-vsi-deployment"
+  for_each                   = module.custom_vsi_map.value
+  prefix                     = var.prefix
+  tags                       = var.tags
+  vpc_id                     = var.vpc_modules[each.value.vpc_name].id
+  subnet_zone_list           = module.custom_vsi_subnets[each.key].subnets
+  secondary_subnet_zone_list = module.custom_vsi_secondary_subnets[each.key].subnets
+  deployment_name            = "${each.value.vpc_name}-${each.key}"
+  resource_group_id          = lookup(each.value, "resource_group_id", null)
+  vsi_per_subnet             = lookup(each.value, "vsi_per_subnet", null)
+  ssh_key_ids = [
+    for ssh_key in each.value.ssh_key_ids :
+    ssh_key == "default" ? var.template_ssh_key_id : ssh_key
   ]
   image_name                       = lookup(each.value, "image_name", null)
   profile                          = lookup(each.value, "profile", null)
