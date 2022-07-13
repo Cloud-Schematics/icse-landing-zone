@@ -166,7 +166,7 @@ Detailed worker pools can be configured either using HCL or JSON. To use JSON co
 
 ---
 
-#### Detailed Worker Pools Using HCL
+### Detailed Worker Pools Using HCL
 
 Detailed worker pools can be configured using the [detailed_worker_pools variable](./variables.tf#L456).
 
@@ -191,7 +191,7 @@ variable "detailed_worker_pools" {
 
 ---
 
-#### Detailed Worker Pools Using JSON
+### Detailed Worker Pools Using JSON
 
 Worker pools can also be defined using the HCL schema by adding them into [template-worker-pools.json](./json-config/template-worker-pools.json).
 
@@ -213,7 +213,7 @@ Quick start virtual server deployments can be found in [virtual_servers.tf](./vi
 
 Quick start virtual server security groups can be found in [vsi_security_groups.tf](./vsi_security_groups.tf).
 
-#### Quickstart VSI Variables
+### Quickstart VSI Variables
 
 Name                               | Type         | Description                                                                                                                                                                | Sensitive | Default
 ---------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------
@@ -228,7 +228,7 @@ profile                            | string       | Type of machine profile for 
 quickstart_vsi_inbound_allow_list  | list(string) | List of CIDR blocks where inbound traffic will be allowed. These allow rules will be added to each VSI security group.                                                     |           | [ "10.0.0.0/8", "161.26.0.0/16" ]
 quickstart_vsi_outbound_allow_list | list(string) | List of CIDR blocks where outbound traffic will be allowed. These allow rules will be added to each VSI security group.                                                    |           | [ "0.0.0.0/0" ]
 
-#### Customizing Quick Start VSI Security groups
+### Customizing Quick Start VSI Security groups
 
 Users can customize security groups created for Quick Start VSI with detailed networking rules by using:
  - HCL using [quickstart_vsi_detailed_security_group_rules variable](./variables.tf#L577) 
@@ -236,7 +236,7 @@ Users can customize security groups created for Quick Start VSI with detailed ne
 
 Custom virtual server deployments are managed in [vsi_custom_deployments.tf](./vsi_custom_deployments.tf)
 
-##### Custom Rules Schema
+### Custom Rules Schema
 
 Both HCL and JSON detailed rules use the same schema
 
@@ -286,7 +286,7 @@ Custom virtual server workloads can be deployed using:
 - HCL and the [detailed_vsi_deployments variable](./variables.tf#L673)
 - JSON using the [template-virtual-servers.json file](./json-config/template-virtual-servers.json) and setting `use_detailed_vsi_deployment_json` to true.
 
-#### Custom Virtual Deployment Schema
+### Custom Virtual Deployment Schema
 
 Both HCL and JSON use the same schema for custom VSI deployments:
 
@@ -319,10 +319,10 @@ variable "detailed_vsi_deployments" {
       placement_group                  = optional(string)       # placement group id
       default_trusted_profile_target   = optional(string)       # profile target id
       dedicated_host_group             = optional(string)       # dedicated host id
-      ##############################################################################
+      ################################################
       # List of block storage volumes. Each volume in this list will be attached
       # to each VSI in the deployment
-      ##############################################################################
+      ################################################
       block_storage_volumes = optional(
         list(
           object({
@@ -335,7 +335,7 @@ variable "detailed_vsi_deployments" {
           })
         )
       )
-      ##############################################################################
+      ################################################
       create_public_load_balancer      = optional(bool)         # Create public load balancer
       create_private_load_balancer     = optional(bool)         # Create privare load balancer
       load_balancer_security_group_ids = optional(list(string)) # security group IDs 
@@ -349,14 +349,14 @@ variable "detailed_vsi_deployments" {
       listener_port                    = optional(number)
       listener_protocol                = optional(string)
       listener_connection_limit        = optional(number)
-      ##############################################################################
+      ################################################
       # List of security group names. Security group names must be specified in    #
       # either var.security_groups or ./json-config/template-virtual-servers.json  #
       # Servers can only be added to security groups in the same VPC               #
-      ##############################################################################
+      ################################################
       primary_security_group_names       = optional(list(string)) # for primary network interface
       load_balancer_security_group_names = optional(list(string)) # for load balancers
-      ##############################################################################
+      ################################################
     })
   )
   default = []
