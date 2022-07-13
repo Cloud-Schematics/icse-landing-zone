@@ -1,4 +1,4 @@
-# ICSE Flexible Cluster and VSI Template
+# ICSE Flexible Landing Zone Template
 
 Get started on IBM Cloud with a flexible landing zone for VPC Networking, Clusters, Virtual Servers, and Cloud Services with minimal inputs. Easily grow from 1 to 3 zones and manage multiple worker pools.
 
