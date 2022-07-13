@@ -1,0 +1,102 @@
+##############################################################################
+# SSH Keys
+##############################################################################
+
+resource "ibm_is_ssh_key" "ssh_key" {
+  count      = var.use_ssh_key_data == null ? 1 : 0
+  name       = "${var.prefix}-ssh-key"
+  public_key = var.ssh_public_key
+}
+
+data "ibm_is_ssh_key" "ssh_key" {
+  count = var.use_ssh_key_data == null ? 0 : 1
+  name  = var.use_ssh_key_data
+}
+
+locals {
+  template_ssh_key_id = (
+    var.use_ssh_key_data == null
+    ? ibm_is_ssh_key.ssh_key[0].id
+    : data.ibm_is_ssh_key.ssh_key[0].id
+  )
+}
+
+##############################################################################
+
+##############################################################################
+# Create a map of VSI deployments
+##############################################################################
+
+module "vsi_deployment_map" {
+  source = "./config_modules/list_to_map"
+  list = flatten([
+    for network in var.vsi_vpcs :
+    [
+      for tier in var.vsi_subnet_tier :
+      {
+        network = network
+        tier    = tier
+        name    = "${network}-${tier}"
+      }
+    ]
+  ])
+}
+
+##############################################################################
+
+##############################################################################
+# Get VSI Subnets
+##############################################################################
+
+module "vsi_subnets" {
+  source           = "./config_modules/get_subnets"
+  for_each         = module.vsi_deployment_map.value
+  subnet_zone_list = module.icse_vpc_network.vpc_networks[each.value.network].subnet_zone_list
+  regex = join("|",
+    [
+      for zone in range(1, var.vsi_zones + 1) :
+      "-${each.value.tier}-${zone}"
+    ]
+  )
+}
+
+##############################################################################
+
+##############################################################################
+# Create VSI KMS Key
+##############################################################################
+
+resource "ibm_kms_key" "vsi_key" {
+  instance_id   = module.icse_vpc_network.key_management_guid
+  key_name      = "${var.prefix}-vsi-key"
+  standard_key  = false
+  endpoint_type = "public" # Use public endpoint to allow for creation on local machine
+}
+
+##############################################################################
+
+##############################################################################
+# VSI Deployment
+##############################################################################
+
+module "vsi_deployment" {
+  source                     = "github.com/Cloud-Schematics/icse-vsi-deployment"
+  for_each                   = module.vsi_deployment_map.value
+  prefix                     = var.prefix
+  tags                       = var.tags
+  image_name                 = var.image_name
+  vsi_per_subnet             = var.vsi_per_subnet
+  profile                    = var.profile
+  resource_group_id          = local.resource_group_vpc_map[each.value.network]
+  vpc_id                     = module.icse_vpc_network.vpc_networks[each.value.network].id
+  subnet_zone_list           = module.vsi_subnets[each.key].subnets
+  deployment_name            = "${each.key}-vsi"
+  boot_volume_encryption_key = ibm_kms_key.vsi_key.crn
+  primary_security_group_ids = [module.vsi_security_groups[each.key].groups[0].id]
+  ssh_key_ids                = [local.template_ssh_key_id]
+  # force await of additional security group rules to ensure network connectivity
+  # is set up before virtual server creation.
+  depends_on = [module.quickstart_vsi_detailed_security_group_rules]
+}
+
+##############################################################################

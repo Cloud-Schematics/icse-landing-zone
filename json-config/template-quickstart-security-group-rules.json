@@ -1,0 +1,16 @@
+[
+  {
+    "security_group_shortname": "workload-vsi-sg",
+    "rules": [
+      {
+        "name": "allow-inbound-port-443",
+        "direction": "inbound",
+        "remote": "0.0.0.0/0",
+        "tcp": {
+          "port_max": 443,
+          "port_min": 443
+        }
+      }
+    ]
+  }
+]

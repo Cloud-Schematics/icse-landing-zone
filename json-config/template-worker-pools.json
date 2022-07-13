@@ -1,0 +1,6 @@
+[
+    {
+        "pool_name" : "example-pool",
+        "cluster_vpc" : "workload"
+    }
+]

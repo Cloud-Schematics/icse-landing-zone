@@ -1,0 +1,11 @@
+terraform.tfvars
+.terraform/
+terraform.tfstate
+.terraform.*
+terraform.*.*
+node_modules/
+.env
+*.x
+package-lock.json
+.DS_Store
+*.bkp

@@ -1,0 +1,50 @@
+[
+  {
+    "name": "example-json-security-group",
+    "rules": [
+      {
+        "direction": "inbound",
+        "name": "allow-ibm-inbound",
+        "remote": "161.26.0.0/16"
+      },
+      {
+        "direction": "inbound",
+        "name": "allow-vpc-inbound",
+        "remote": "10.0.0.0/8"
+      },
+      {
+        "direction": "outbound",
+        "name": "allow-vpc-outbound",
+        "remote": "10.0.0.0/8"
+      },
+      {
+        "direction": "outbound",
+        "name": "allow-ibm-tcp-53-outbound",
+        "remote": "161.26.0.0/16",
+        "tcp": {
+          "port_max": 53,
+          "port_min": 53
+        }
+      },
+      {
+        "direction": "outbound",
+        "name": "allow-ibm-tcp-80-outbound",
+        "remote": "161.26.0.0/16",
+        "tcp": {
+          "port_max": 80,
+          "port_min": 80
+        }
+      },
+      {
+        "direction": "outbound",
+        "name": "allow-ibm-tcp-443-outbound",
+        "remote": "161.26.0.0/16",
+        "tcp": {
+          "port_max": 443,
+          "port_min": 443
+        }
+      }
+    ],
+    "vpc_name": "management"
+  }
+]

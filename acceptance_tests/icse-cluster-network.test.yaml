@@ -1,0 +1,879 @@
+tfxPlan:
+  template-path: "../"
+  template-name: "tfx Generated Plan"
+  tfvars: {}
+
+Root Module:
+  address: root_module
+  resources:
+    - Easy Cluster To Kms Cluster To Kms:
+        address: ibm_iam_authorization_policy.easy_cluster_to_kms["cluster-to-kms"]
+        values:
+          - description: Allow cluster worker pools to be encrypted by Key Management instance."
+          - roles:
+              - Reader
+              - Authorization Delegator
+          - source_service_name: containers-kubernetes
+          - target_service_name: kms
+    - Cluster Key:
+        address: ibm_kms_key.cluster_key
+        values:
+          - endpoint_type: public
+          - force_delete: false
+          - key_name: at-3-zone-cluster-key
+          - key_ring_id: default
+          - standard_key: false
+    - Resource Group Management:
+        address: ibm_resource_group.resource_group["management"]
+        values:
+          - name: at-3-zone-management-rg
+Clusters Workload:
+  address: module.clusters["workload"]
+  resources:
+    - Cluster:
+        address: ibm_container_vpc_cluster.cluster
+        values:
+          - disable_public_service_endpoint: false
+          - entitlement: cloud_pak
+          - flavor: bx2.16x64
+          - force_delete_storage: false
+          - image_security_enforcement: false
+          - kms_config:
+              - private_endpoint: true
+          - kube_version: 1.24.2
+          - name: at-3-zone-roks-cluster
+          - resource_group_id: 29f5b3716d864498985b9725c649ad79
+          - taints: []
+          - timeouts:
+              create: 3h
+              delete: 2h
+              update: 3h
+          - update_all_workers: false
+          - wait_for_worker_update: true
+          - wait_till: IngressReady
+          - worker_count: 2
+          - zones:
+              - name: us-south-1
+              - name: us-south-2
+              - name: us-south-3
+Detailed Worker Pools Example Pool:
+  address: module.detailed_worker_pools["example-pool"]
+  resources:
+    - Pool:
+        address: ibm_container_vpc_worker_pool.pool
+        values:
+          - flavor: bx2.16x64
+          - resource_group_id: 29f5b3716d864498985b9725c649ad79
+          - taints: []
+          - worker_count: 2
+          - worker_pool_name: at-3-zone-example-pool
+          - zones:
+              - name: us-south-1
+              - name: us-south-2
+              - name: us-south-3
+Easy Worker Pools Workload Test:
+  address: module.easy_worker_pools["workload-test"]
+  resources:
+    - Pool:
+        address: ibm_container_vpc_worker_pool.pool
+        values:
+          - flavor: bx2.16x64
+          - resource_group_id: 29f5b3716d864498985b9725c649ad79
+          - taints: []
+          - worker_count: 2
+          - worker_pool_name: at-3-zone-workload-test
+          - zones:
+              - name: us-south-1
+              - name: us-south-2
+              - name: us-south-3
+Icse Vpc Network:
+  address: module.icse_vpc_network
+  resources:
+    - Format Output:
+        address: external.format_output
+        values:
+          - program:
+              - python3
+              - vpc_module/scripts/output.py
+              - null
+Cloud Object Storage:
+  address: module.icse_vpc_network.module.services.module.cloud_object_storage
+  resources:
+    - Bucket Atracker Bucket:
+        address: ibm_cos_bucket.bucket["atracker-bucket"]
+        values:
+          - abort_incomplete_multipart_upload_days: []
+          - activity_tracking: []
+          - archive_rule: []
+          - endpoint_type: public
+          - expire_rule: []
+          - force_delete: true
+          - metrics_monitoring: []
+          - noncurrent_version_expiration: []
+          - object_versioning: []
+          - region_location: us-south
+          - retention_rule: []
+          - storage_class: standard
+    - Bucket Management Flow Logs Bucket:
+        address: ibm_cos_bucket.bucket["management-flow-logs-bucket"]
+        values:
+          - abort_incomplete_multipart_upload_days: []
+          - activity_tracking: []
+          - archive_rule: []
+          - endpoint_type: public
+          - expire_rule: []
+          - force_delete: true
+          - metrics_monitoring: []
+          - noncurrent_version_expiration: []
+          - object_versioning: []
+          - region_location: us-south
+          - retention_rule: []
+          - storage_class: standard
+    - Bucket Workload Flow Logs Bucket:
+        address: ibm_cos_bucket.bucket["workload-flow-logs-bucket"]
+        values:
+          - abort_incomplete_multipart_upload_days: []
+          - activity_tracking: []
+          - archive_rule: []
+          - endpoint_type: public
+          - expire_rule: []
+          - force_delete: true
+          - metrics_monitoring: []
+          - noncurrent_version_expiration: []
+          - object_versioning: []
+          - region_location: us-south
+          - retention_rule: []
+          - storage_class: standard
+    - Cos Cos:
+        address: ibm_resource_instance.cos["cos"]
+        values:
+          - location: global
+          - plan: standard
+          - service: cloud-object-storage
+    - Random Cos Suffix:
+        address: random_string.random_cos_suffix
+        values:
+          - length: 8
+          - lower: true
+          - min_lower: 0
+          - min_numeric: 0
+          - min_special: 0
+          - min_upper: 0
+          - number: true
+          - numeric: true
+          - special: false
+          - upper: false
+Key Management Key Management:
+  address: module.icse_vpc_network.module.services.module.key_management["key_management"]
+  resources:
+    - Block Storage Policy 0:
+        address: ibm_iam_authorization_policy.block_storage_policy[0]
+        values:
+          - description: Allow block storage volumes to be encrypted by Key Management instance."
+          - roles:
+              - Reader
+              - Authorization Delegator
+          - source_resource_type: share
+          - source_service_name: is
+          - target_service_name: kms
+    - Server Protect Policy 0:
+        address: ibm_iam_authorization_policy.server_protect_policy[0]
+        values:
+          - description: Allow block storage volumes to be encrypted by Key Management instance."
+          - roles:
+              - Reader
+          - source_service_name: server-protect
+          - target_service_name: kms
+    - Key Bucket Key:
+        address: ibm_kms_key.key["bucket-key"]
+        values:
+          - force_delete: true
+          - key_name: at-3-zone-bucket-key
+          - key_ring_id: default
+          - standard_key: false
+    - Kms 0:
+        address: ibm_resource_instance.kms[0]
+        values:
+          - location: us-south
+          - name: at-3-zone-kms
+          - plan: tiered-pricing
+          - service: kms
+Vpc:
+  address: module.icse_vpc_network.module.vpc
+  resources:
+    - Format Output:
+        address: external.format_output
+        values:
+          - program:
+              - python3
+              - ".terraform/modules/icse_vpc_network.vpc/scripts/output.py"
+              - null
+    - Connection Management:
+        address: ibm_tg_connection.connection["management"]
+        values:
+          - name: at-3-zone-management-hub-connection
+          - network_type: vpc
+          - timeouts:
+              create: 30m
+              delete: 30m
+    - Connection Workload:
+        address: ibm_tg_connection.connection["workload"]
+        values:
+          - name: at-3-zone-workload-hub-connection
+          - network_type: vpc
+          - timeouts:
+              create: 30m
+              delete: 30m
+    - Transit Gateway 0:
+        address: ibm_tg_gateway.transit_gateway[0]
+        values:
+          - global: false
+          - location: us-south
+          - name: at-3-zone-transit-gateway
+          - timeouts:
+              create: 30m
+              delete: 30m
+Vpcs Workload:
+  address: module.icse_vpc_network.module.vpc.module.vpcs["workload"]
+  resources:
+    - Vpc:
+        address: ibm_is_vpc.vpc
+        values:
+          - address_prefix_management: auto
+          - classic_access: false
+          - name: at-3-zone-workload-vpc
+          - resource_group: 29f5b3716d864498985b9725c649ad79
+Network Acls:
+  address: module.icse_vpc_network.module.vpc.module.vpcs["management"].module.network_acls
+  resources:
+    - Acl Vpe Acl:
+        address: ibm_is_network_acl.acl["vpe-acl"]
+        values:
+          - name: at-3-zone-management-vpe-acl
+          - rules:
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: roks-create-worker-nodes-inbound
+                source: 161.26.0.0/16
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 161.26.0.0/16
+                direction: outbound
+                icmp: []
+                name: roks-create-worker-nodes-outbound
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: roks-nodes-to-service-inbound
+                source: 166.8.0.0/14
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 166.8.0.0/14
+                direction: outbound
+                icmp: []
+                name: roks-nodes-to-service-outbound
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: allow-app-incoming-traffic-requests
+                source: 10.0.0.0/8
+                tcp:
+                  - port_max: 65535
+                    port_min: 1
+                    source_port_max: 30000
+                    source_port_min: 30000
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: outbound
+                icmp: []
+                name: allow-app-outgoing-traffic-requests
+                source: 10.0.0.0/8
+                tcp:
+                  - port_max: 32767
+                    port_min: 30000
+                    source_port_max: 65535
+                    source_port_min: 1
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: allow-lb-incoming-traffic-requests
+                source: 10.0.0.0/8
+                tcp:
+                  - port_max: 443
+                    port_min: 443
+                    source_port_max: 65535
+                    source_port_min: 1
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: outbound
+                icmp: []
+                name: allow-lb-outgoing-traffic-requests
+                source: 10.0.0.0/8
+                tcp:
+                  - port_max: 65535
+                    port_min: 1
+                    source_port_max: 443
+                    source_port_min: 443
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: vpe-allow-inbound-1
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: vpe-allow-inbound-2
+                source: 161.26.0.0/16
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 0.0.0.0/0
+                direction: outbound
+                icmp: []
+                name: vpe-allow-outbound-1
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: deny
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: vpe-deny-inbound-1
+                source: 0.0.0.0/0
+                tcp: []
+                udp: []
+    - Acl Vpn Acl:
+        address: ibm_is_network_acl.acl["vpn-acl"]
+        values:
+          - name: at-3-zone-management-vpn-acl
+          - rules:
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: roks-create-worker-nodes-inbound
+                source: 161.26.0.0/16
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 161.26.0.0/16
+                direction: outbound
+                icmp: []
+                name: roks-create-worker-nodes-outbound
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: roks-nodes-to-service-inbound
+                source: 166.8.0.0/14
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 166.8.0.0/14
+                direction: outbound
+                icmp: []
+                name: roks-nodes-to-service-outbound
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: allow-app-incoming-traffic-requests
+                source: 10.0.0.0/8
+                tcp:
+                  - port_max: 65535
+                    port_min: 1
+                    source_port_max: 30000
+                    source_port_min: 30000
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: outbound
+                icmp: []
+                name: allow-app-outgoing-traffic-requests
+                source: 10.0.0.0/8
+                tcp:
+                  - port_max: 32767
+                    port_min: 30000
+                    source_port_max: 65535
+                    source_port_min: 1
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: allow-lb-incoming-traffic-requests
+                source: 10.0.0.0/8
+                tcp:
+                  - port_max: 443
+                    port_min: 443
+                    source_port_max: 65535
+                    source_port_min: 1
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: outbound
+                icmp: []
+                name: allow-lb-outgoing-traffic-requests
+                source: 10.0.0.0/8
+                tcp:
+                  - port_max: 65535
+                    port_min: 1
+                    source_port_max: 443
+                    source_port_min: 443
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: vpn-allow-inbound-1
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: vpn-allow-inbound-2
+                source: 161.26.0.0/16
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 0.0.0.0/0
+                direction: outbound
+                icmp: []
+                name: vpn-allow-outbound-1
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: deny
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: vpn-deny-inbound-1
+                source: 0.0.0.0/0
+                tcp: []
+                udp: []
+    - Acl Vsi Acl:
+        address: ibm_is_network_acl.acl["vsi-acl"]
+        values:
+          - name: at-3-zone-management-vsi-acl
+          - rules:
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: roks-create-worker-nodes-inbound
+                source: 161.26.0.0/16
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 161.26.0.0/16
+                direction: outbound
+                icmp: []
+                name: roks-create-worker-nodes-outbound
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: roks-nodes-to-service-inbound
+                source: 166.8.0.0/14
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 166.8.0.0/14
+                direction: outbound
+                icmp: []
+                name: roks-nodes-to-service-outbound
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: allow-app-incoming-traffic-requests
+                source: 10.0.0.0/8
+                tcp:
+                  - port_max: 65535
+                    port_min: 1
+                    source_port_max: 30000
+                    source_port_min: 30000
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: outbound
+                icmp: []
+                name: allow-app-outgoing-traffic-requests
+                source: 10.0.0.0/8
+                tcp:
+                  - port_max: 32767
+                    port_min: 30000
+                    source_port_max: 65535
+                    source_port_min: 1
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: allow-lb-incoming-traffic-requests
+                source: 10.0.0.0/8
+                tcp:
+                  - port_max: 443
+                    port_min: 443
+                    source_port_max: 65535
+                    source_port_min: 1
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: outbound
+                icmp: []
+                name: allow-lb-outgoing-traffic-requests
+                source: 10.0.0.0/8
+                tcp:
+                  - port_max: 65535
+                    port_min: 1
+                    source_port_max: 443
+                    source_port_min: 443
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: vsi-allow-inbound-1
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: vsi-allow-inbound-2
+                source: 161.26.0.0/16
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 0.0.0.0/0
+                direction: outbound
+                icmp: []
+                name: vsi-allow-outbound-1
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: deny
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: vsi-deny-inbound-1
+                source: 0.0.0.0/0
+                tcp: []
+                udp: []
+Subnets:
+  address: module.icse_vpc_network.module.vpc.module.vpcs["management"].module.subnets
+  resources:
+    - Subnet At 3 Zone Management Vpe 1:
+        address: ibm_is_subnet.subnet["at-3-zone-management-vpe-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.10.20.0/24
+          - name: at-3-zone-management-vpe-1
+          - zone: us-south-1
+    - Subnet At 3 Zone Management Vpe 2:
+        address: ibm_is_subnet.subnet["at-3-zone-management-vpe-2"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.20.20.0/24
+          - name: at-3-zone-management-vpe-2
+          - zone: us-south-2
+    - Subnet At 3 Zone Management Vpe 3:
+        address: ibm_is_subnet.subnet["at-3-zone-management-vpe-3"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.30.20.0/24
+          - name: at-3-zone-management-vpe-3
+          - zone: us-south-3
+    - Subnet At 3 Zone Management Vpn 1:
+        address: ibm_is_subnet.subnet["at-3-zone-management-vpn-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.0.30.0/24
+          - name: at-3-zone-management-vpn-1
+          - zone: us-south-1
+    - Subnet At 3 Zone Management Vsi 1:
+        address: ibm_is_subnet.subnet["at-3-zone-management-vsi-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.10.10.0/24
+          - name: at-3-zone-management-vsi-1
+          - zone: us-south-1
+    - Subnet At 3 Zone Management Vsi 2:
+        address: ibm_is_subnet.subnet["at-3-zone-management-vsi-2"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.20.10.0/24
+          - name: at-3-zone-management-vsi-2
+          - zone: us-south-2
+    - Subnet At 3 Zone Management Vsi 3:
+        address: ibm_is_subnet.subnet["at-3-zone-management-vsi-3"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.30.10.0/24
+          - name: at-3-zone-management-vsi-3
+          - zone: us-south-3
+    - Subnet Prefix At 3 Zone Management Vpe 1:
+        address: ibm_is_vpc_address_prefix.subnet_prefix["at-3-zone-management-vpe-1"]
+        values:
+          - cidr: 10.10.20.0/24
+          - is_default: false
+          - name: at-3-zone-management-vpe-1
+          - zone: us-south-1
+    - Subnet Prefix At 3 Zone Management Vpe 2:
+        address: ibm_is_vpc_address_prefix.subnet_prefix["at-3-zone-management-vpe-2"]
+        values:
+          - cidr: 10.20.20.0/24
+          - is_default: false
+          - name: at-3-zone-management-vpe-2
+          - zone: us-south-2
+    - Subnet Prefix At 3 Zone Management Vpe 3:
+        address: ibm_is_vpc_address_prefix.subnet_prefix["at-3-zone-management-vpe-3"]
+        values:
+          - cidr: 10.30.20.0/24
+          - is_default: false
+          - name: at-3-zone-management-vpe-3
+          - zone: us-south-3
+    - Subnet Prefix At 3 Zone Management Vpn 1:
+        address: ibm_is_vpc_address_prefix.subnet_prefix["at-3-zone-management-vpn-1"]
+        values:
+          - cidr: 10.0.30.0/24
+          - is_default: false
+          - name: at-3-zone-management-vpn-1
+          - zone: us-south-1
+    - Subnet Prefix At 3 Zone Management Vsi 1:
+        address: ibm_is_vpc_address_prefix.subnet_prefix["at-3-zone-management-vsi-1"]
+        values:
+          - cidr: 10.10.10.0/24
+          - is_default: false
+          - name: at-3-zone-management-vsi-1
+          - zone: us-south-1
+    - Subnet Prefix At 3 Zone Management Vsi 2:
+        address: ibm_is_vpc_address_prefix.subnet_prefix["at-3-zone-management-vsi-2"]
+        values:
+          - cidr: 10.20.10.0/24
+          - is_default: false
+          - name: at-3-zone-management-vsi-2
+          - zone: us-south-2
+    - Subnet Prefix At 3 Zone Management Vsi 3:
+        address: ibm_is_vpc_address_prefix.subnet_prefix["at-3-zone-management-vsi-3"]
+        values:
+          - cidr: 10.30.10.0/24
+          - is_default: false
+          - name: at-3-zone-management-vsi-3
+          - zone: us-south-3
+Vpcs Management:
+  address: module.icse_vpc_network.module.vpc.module.vpcs["management"]
+  resources:
+    - Vpc:
+        address: ibm_is_vpc.vpc
+        values:
+          - address_prefix_management: auto
+          - classic_access: false
+          - name: at-3-zone-management-vpc
+Public Gateways:
+  address: module.icse_vpc_network.module.vpc.module.vpcs["management"].module.public_gateways
+  resources:
+    - Gateway Zone 1:
+        address: ibm_is_public_gateway.gateway["zone-1"]
+        values:
+          - name: at-3-zone-management-public-gateway-zone-1
+          - zone: us-south-1
+Vpn Gateway:
+  address: module.icse_vpc_network.module.vpc.module.vpcs["management"].module.vpn_gateway
+  resources:
+    - Gateway 0:
+        address: ibm_is_vpn_gateway.gateway[0]
+        values:
+          - mode: route
+          - name: at-3-zone-management-vpn-gateway
+          - timeouts:
+              delete: 1h
+Flow Logs:
+  address: module.icse_vpc_network.module.flow_logs
+  resources:
+    - Flow Logs Policy Cos:
+        address: ibm_iam_authorization_policy.flow_logs_policy["cos"]
+        values:
+          - description: Allow flow logs write access cloud object storage instance
+          - roles:
+              - Writer
+          - source_resource_type: flow-log-collector
+          - source_service_name: is
+          - target_service_name: cloud-object-storage
+    - Flow Logs Management:
+        address: ibm_is_flow_log.flow_logs["management"]
+        values:
+          - active: true
+          - name: at-3-zone-management-flow-logs
+    - Flow Logs Workload:
+        address: ibm_is_flow_log.flow_logs["workload"]
+        values:
+          - active: true
+          - name: at-3-zone-workload-flow-logs
+          - resource_group: 29f5b3716d864498985b9725c649ad79
+Activity Tracker:
+  address: module.icse_vpc_network.module.activity_tracker
+  resources:
+    - Atracker Target 0:
+        address: ibm_atracker_target.atracker_target[0]
+        values:
+          - cos_endpoint:
+              - endpoint: s3.private.us-south.cloud-object-storage.appdomain.cloud
+                service_to_service_enabled: null
+          - logdna_endpoint: []
+          - name: at-3-zone-atracker
+          - target_type: cloud_object_storage
+    - Atracker Cos Key 0:
+        address: ibm_resource_key.atracker_cos_key[0]
+        values:
+          - name: at-3-zone-atracker-cos-bind-key
+          - role: Writer
+Virtual Private Endpoints Management:
+  address: module.virtual_private_endpoints["management"]
+  resources:
+    - Ip At 3 Zone Management Vpe 1 Cloud Object Storage Gateway 1 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["at-3-zone-management-vpe-1-cloud-object-storage-gateway-1-ip"]
+        values: []
+    - Ip At 3 Zone Management Vpe 1 Kms Gateway 1 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["at-3-zone-management-vpe-1-kms-gateway-1-ip"]
+        values: []
+    - Ip At 3 Zone Management Vpe 2 Cloud Object Storage Gateway 2 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["at-3-zone-management-vpe-2-cloud-object-storage-gateway-2-ip"]
+        values: []
+    - Ip At 3 Zone Management Vpe 2 Kms Gateway 2 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["at-3-zone-management-vpe-2-kms-gateway-2-ip"]
+        values: []
+    - Ip At 3 Zone Management Vpe 3 Cloud Object Storage Gateway 3 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["at-3-zone-management-vpe-3-cloud-object-storage-gateway-3-ip"]
+        values: []
+    - Ip At 3 Zone Management Vpe 3 Kms Gateway 3 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["at-3-zone-management-vpe-3-kms-gateway-3-ip"]
+        values: []
+    - Vpe Management Cloud Object Storage:
+        address: ibm_is_virtual_endpoint_gateway.vpe["management-cloud-object-storage"]
+        values:
+          - name: at-3-zone-management-cloud-object-storage-endpoint-gateway
+          - target:
+              - crn: crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.us-south.cloud-object-storage.appdomain.cloud
+                name: null
+                resource_type: provider_cloud_service
+    - Vpe Management Kms:
+        address: ibm_is_virtual_endpoint_gateway.vpe["management-kms"]
+        values:
+          - name: at-3-zone-management-kms-endpoint-gateway
+          - target:
+              - crn: crn:v1:bluemix:public:kms:us-south:::endpoint:private.us-south.kms.cloud.ibm.com
+                name: null
+                resource_type: provider_cloud_service
+    - Endpoint Gateway Ip At 3 Zone Management Vpe 1 Cloud Object Storage Gateway 1 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["at-3-zone-management-vpe-1-cloud-object-storage-gateway-1-ip"]
+        values: []
+    - Endpoint Gateway Ip At 3 Zone Management Vpe 1 Kms Gateway 1 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["at-3-zone-management-vpe-1-kms-gateway-1-ip"]
+        values: []
+    - Endpoint Gateway Ip At 3 Zone Management Vpe 2 Cloud Object Storage Gateway 2 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["at-3-zone-management-vpe-2-cloud-object-storage-gateway-2-ip"]
+        values: []
+    - Endpoint Gateway Ip At 3 Zone Management Vpe 2 Kms Gateway 2 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["at-3-zone-management-vpe-2-kms-gateway-2-ip"]
+        values: []
+    - Endpoint Gateway Ip At 3 Zone Management Vpe 3 Cloud Object Storage Gateway 3 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["at-3-zone-management-vpe-3-cloud-object-storage-gateway-3-ip"]
+        values: []
+    - Endpoint Gateway Ip At 3 Zone Management Vpe 3 Kms Gateway 3 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["at-3-zone-management-vpe-3-kms-gateway-3-ip"]
+        values: []
+Virtual Private Endpoints Workload:
+  address: module.virtual_private_endpoints["workload"]
+  resources:
+    - Ip At 3 Zone Workload Vpe 1 Cloud Object Storage Gateway 1 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["at-3-zone-workload-vpe-1-cloud-object-storage-gateway-1-ip"]
+        values: []
+    - Ip At 3 Zone Workload Vpe 1 Kms Gateway 1 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["at-3-zone-workload-vpe-1-kms-gateway-1-ip"]
+        values: []
+    - Ip At 3 Zone Workload Vpe 2 Cloud Object Storage Gateway 2 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["at-3-zone-workload-vpe-2-cloud-object-storage-gateway-2-ip"]
+        values: []
+    - Ip At 3 Zone Workload Vpe 2 Kms Gateway 2 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["at-3-zone-workload-vpe-2-kms-gateway-2-ip"]
+        values: []
+    - Ip At 3 Zone Workload Vpe 3 Cloud Object Storage Gateway 3 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["at-3-zone-workload-vpe-3-cloud-object-storage-gateway-3-ip"]
+        values: []
+    - Ip At 3 Zone Workload Vpe 3 Kms Gateway 3 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["at-3-zone-workload-vpe-3-kms-gateway-3-ip"]
+        values: []
+    - Vpe Workload Cloud Object Storage:
+        address: ibm_is_virtual_endpoint_gateway.vpe["workload-cloud-object-storage"]
+        values:
+          - name: at-3-zone-workload-cloud-object-storage-endpoint-gateway
+          - resource_group: 29f5b3716d864498985b9725c649ad79
+          - target:
+              - crn: crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.us-south.cloud-object-storage.appdomain.cloud
+                name: null
+                resource_type: provider_cloud_service
+    - Vpe Workload Kms:
+        address: ibm_is_virtual_endpoint_gateway.vpe["workload-kms"]
+        values:
+          - name: at-3-zone-workload-kms-endpoint-gateway
+          - resource_group: 29f5b3716d864498985b9725c649ad79
+          - target:
+              - crn: crn:v1:bluemix:public:kms:us-south:::endpoint:private.us-south.kms.cloud.ibm.com
+                name: null
+                resource_type: provider_cloud_service
+    - Endpoint Gateway Ip At 3 Zone Workload Vpe 1 Cloud Object Storage Gateway 1 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["at-3-zone-workload-vpe-1-cloud-object-storage-gateway-1-ip"]
+        values: []
+    - Endpoint Gateway Ip At 3 Zone Workload Vpe 1 Kms Gateway 1 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["at-3-zone-workload-vpe-1-kms-gateway-1-ip"]
+        values: []
+    - Endpoint Gateway Ip At 3 Zone Workload Vpe 2 Cloud Object Storage Gateway 2 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["at-3-zone-workload-vpe-2-cloud-object-storage-gateway-2-ip"]
+        values: []
+    - Endpoint Gateway Ip At 3 Zone Workload Vpe 2 Kms Gateway 2 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["at-3-zone-workload-vpe-2-kms-gateway-2-ip"]
+        values: []
+    - Endpoint Gateway Ip At 3 Zone Workload Vpe 3 Cloud Object Storage Gateway 3 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["at-3-zone-workload-vpe-3-cloud-object-storage-gateway-3-ip"]
+        values: []
+    - Endpoint Gateway Ip At 3 Zone Workload Vpe 3 Kms Gateway 3 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["at-3-zone-workload-vpe-3-kms-gateway-3-ip"]
+        values: []

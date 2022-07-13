@@ -1,0 +1,13 @@
+[
+    {
+      "deployment_name"        : "test-custom-json-deployment",
+      "vpc_name"               : "management",
+      "subnet_tiers"           : ["vsi"],
+      "secondary_subnet_tiers" : ["vpe"],
+      "vsi_per_subnet"         : 1,
+      "zones"                  : 1,
+      "image_name"             : "ibm-ubuntu-18-04-6-minimal-amd64-3",
+      "profile"                : "bx2-2x8",
+      "ssh_key_ids"            : ["default"]
+    }
+  ]
