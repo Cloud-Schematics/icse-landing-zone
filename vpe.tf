@@ -3,7 +3,7 @@
 ##############################################################################
 
 module "vpe_subnets" {
-  source           = "./config_modules/get_subnets"
+  source           = "github.com/Cloud-Schematics/get-subnets"
   for_each         = module.icse_vpc_network.vpc_networks
   subnet_zone_list = each.value.subnet_zone_list
   regex            = "-vpe-"

@@ -23,7 +23,7 @@ module "custom_vsi_map" {
 ##############################################################################
 
 module "custom_vsi_subnets" {
-  source           = "./config_modules/get_subnets"
+  source           = "github.com/Cloud-Schematics/get-subnets"
   for_each         = module.custom_vsi_map.value
   subnet_zone_list = var.vpc_modules[each.value.vpc_name].subnet_zone_list
   regex = join("|",
@@ -42,7 +42,7 @@ module "custom_vsi_subnets" {
 }
 
 module "custom_vsi_secondary_subnets" {
-  source           = "./config_modules/get_subnets"
+  source           = "github.com/Cloud-Schematics/get-subnets"
   for_each         = module.custom_vsi_map.value
   subnet_zone_list = var.vpc_modules[each.value.vpc_name].subnet_zone_list
   regex = join("|",
