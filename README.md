@@ -39,17 +39,65 @@ Get started with our quick start patterns by copying the pattern tfvars into `te
 
 ### VSI Pattern
 
-Network Architecture Diagram                   | Pattern .tfvars
------------------------------------------------|------------------
-![vsi-pattern](./.docs/images/example-vsi.png) | ibmcloud_api_key                    = `"<your api key>"`<br/>region                              = `"<ibm cloud region>"`<br/>prefix                              = `"<your architecture prefix>"`<br/>tags                                = ["icse", "landing-zone"]<br/>zones                               = 3<br/>ssh_public_key                      = `"<your ssh public key>"`<br/>vsi_vpcs                            = ["workload", "management"]<br/>vsi_subnet_tier                     = ["vsi"]<br/>vsi_per_subnet                      = 1<br/>vsi_zones                           = 3<br/>image_name                          = "ibm-ubuntu-18-04-6-minimal-amd64-3"<br/>profile                             = "bx2-2x8"
+<table>
+  <tr>
+    <th>Network Architecture Diagram</th><th>Pattern .tfvars</th>
+  </tr>
+  <tr>
+    <td> ![vsi-pattern](./.docs/images/example-vsi.png) </td>
+    <td>
+    ```terraform
+ibmcloud_api_key                    = `"<your api key>"`
+region                              = `"<ibm cloud region>"`
+prefix                              = `"<your architecture prefix>"
+tags                                = ["icse", "landing-zone"]
+zones                               = 3
+ssh_public_key                      = `"<your ssh public key>"`
+vsi_vpcs                            = ["workload", "management"]
+vsi_subnet_tier                     = ["vsi"]
+vsi_per_subnet                      = 1
+vsi_zones                           = 3
+image_name                          = "ibm-ubuntu-18-04-6-minimal-amd64-3"
+profile                             = "bx2-2x8"```
+    </td>
+  </tr>
+</table>
 
-### OpenShift and VSI Pattern
+## OpenShift and VSI Pattern
 
-Network Architecture Diagram                   | Pattern .tfvars
------------------------------------------------|------------------
-![mixed-pattern](./.docs/images/example-roks.png) | ibmcloud_api_key                = `"<your api key>"`<br/>region                          = `"<ibm cloud region>"`<br/>prefix                          = `"<your architecture prefix>"`<br/>tags                            = ["icse", "landing-zone"]<br/>zones                           = 3<br/>cluster_type                    = "openshift"<br/>cluster_vpcs                    = ["workload"]<br/>cluster_subnet_tier             = ["vsi"]<br/>cluster_zones                   = 3<br/>kube_version                    = "default"<br/>flavor                          = "bx2.16x64"<br/>workers_per_zone                = 2<br/>disable_public_service_endpoint = false<br/>entitlement                     = null<br/>ssh_public_key                  = `"<your ssh public key>"`<br/>vsi_vpcs                        = ["management"]<br/>vsi_subnet_tier                 = ["vsi"]<br/>vsi_per_subnet                  = 1<br/>vsi_zones                       = 3<br/>image_name                      = "ibm-ubuntu-18-04-6-minimal-amd64-3"<br/>profile                         = "bx2-2x8"
-
----
+<table>
+  <tr>
+    <th>Network Architecture Diagram</th><th>Pattern .tfvars</th>
+  </tr>
+  <tr>
+      <td> ![mixed-pattern](./.docs/images/example-roks.png) </td>
+    <td>
+    ```terraform
+ibmcloud_api_key                = `"<your api key>"`
+region                          = `"<ibm cloud region>"`
+prefix                          = `"<your architecture prefix>"`
+tags                            = ["icse", "landing-zone"]
+zones                           = 3
+cluster_type                    = "openshift"
+cluster_vpcs                    = ["workload"]
+cluster_subnet_tier             = ["vsi"]
+cluster_zones                   = 3
+kube_version                    = "default"
+flavor                          = "bx2.16x64"
+workers_per_zone                = 2
+disable_public_service_endpoint = false
+entitlement                     = null
+ssh_public_key                  = `"<your ssh public key>"`
+vsi_vpcs                        = ["management"]
+vsi_subnet_tier                 = ["vsi"]
+vsi_per_subnet                  = 1
+vsi_zones                       = 3
+image_name                      = "ibm-ubuntu-18-04-6-minimal-amd64-3"
+profile                         = "bx2-2x8"
+    ```
+    </td>
+  </tr>
+</table>
 
 ## Flexible VPC Network
 
