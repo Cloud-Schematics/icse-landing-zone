@@ -11,8 +11,12 @@ Get started on IBM Cloud with a flexible landing zone for VPC Networking, Cluste
 ## Table of Contents
 
 1. [Quick Start Templates](#quick-start-templates)
-    - [VSI Pattern](#vsi-pattern)
-    - [OpenShift and VSI Pattern](#openshift-and-vsi-pattern)
+    - [3 Zone Patterns](#3-zone-patterns)
+       - [VSI Pattern](#vsi-pattern)
+       - [OpenShift and VSI Pattern](#openshift-and-vsi-pattern)
+    - [1 Zone Patterns](#1-zone-patterns)
+       - [One VPC OpenShift Pattern](#one-vpc-openshift-pattern)
+       - [One VPC Virtual Server Pattern](#one-vpc-virtual-server-pattern)
 2. [Flexible VPC Network](#flexible-vpc-network)
     - [VPC Network Variables](#vpc-network-variables)
     - [Easily Expand Your Network](#easily-expand-your-architecturefrom-one-to-three-zones)
@@ -35,7 +39,34 @@ Get started on IBM Cloud with a flexible landing zone for VPC Networking, Cluste
 
 ## Quick Start Templates
 
-Get started with our quick start patterns by copying the pattern tfvars into `terraform.tfvars`.
+Get started with our quick start patterns by copying the pattern tfvars into `terraform.tfvars` inside the root directory.
+
+### Clone the Repo
+
+```shell
+$ git clone https://github.com/Cloud-Schematics/icse-landing-zone.git
+```
+
+### Create Variable Store
+
+```shell
+$ cd icse-landing-zone/
+$ touch terraform.tfvars
+```
+### Copy Example Variables
+
+Choose a pattern and add the pattern `.tfvars` to `terraform.tfvars`. Fill in the following variables inside `terraform.tfvars`:
+
+Variable Name    | Value
+-----------------|---------
+ibmcloud_api_key | Your IBM Cloud Platform API Key
+region           | The IBM Cloud region to deploy your architecture
+prefix           | A unique identifier that will be prepended to the name of each resource
+ssh_public_key   | The SSH key to use when proisioning virtual servers *(Only required when provisioning VSI)*
+
+---
+
+## 3 Zone Patterns
 
 ### VSI Pattern
 
@@ -56,9 +87,9 @@ Get started with our quick start patterns by copying the pattern tfvars into `te
 ibmcloud_api_key = `"<your api key>"`
 region           = `"<ibm cloud region>"`
 prefix           = `"<your architecture prefix>"
+ssh_public_key   = `"<your ssh public key>"`
 tags             = ["icse", "landing-zone"]
 zones            = 3
-ssh_public_key   = `"<your ssh public key>"`
 vsi_vpcs         = ["workload", "management"]
 vsi_subnet_tier  = ["vsi"]
 vsi_per_subnet   = 1
@@ -71,7 +102,7 @@ profile          = "bx2-2x8"
   </tr>
 </table>
 
-## OpenShift and VSI Pattern
+### OpenShift and VSI Pattern
 
 <table>
   <tr>
@@ -91,6 +122,7 @@ profile          = "bx2-2x8"
 ibmcloud_api_key    = `"<your api key>"`
 region              = `"<ibm cloud region>"`
 prefix              = `"<your architecture prefix>"`
+ssh_public_key      = `"<your ssh public key>"`
 tags                = ["icse", "landing-zone"]
 zones               = 3
 cluster_type        = "openshift"
@@ -101,7 +133,6 @@ kube_version        = "default"
 flavor              = "bx2.16x64"
 workers_per_zone    = 2
 entitlement         = null
-ssh_public_key      = `"<your ssh public key>"`
 vsi_vpcs            = ["management"]
 vsi_subnet_tier     = ["vsi"]
 vsi_per_subnet      = 1
@@ -115,6 +146,90 @@ disable_public_service_endpoint = false
   </td>
   </tr>
 </table>
+
+---
+
+## 1 Zone Patterns
+
+### One VPC OpenShift Pattern
+
+<table>
+  <tr>
+    <th>Network Architecture Diagram</th><th>Pattern .tfvars</th>
+  </tr>
+  <tr>
+  <td> 
+      
+![roks-1-zone](./.docs/images/roks-1-zone.png) 
+      
+      
+  </td>
+    <td>
+
+
+```terraform
+ibmcloud_api_key                = `"<your api key>"`
+region                          = `"<ibm cloud region>"`
+prefix                          = `"<your architecture prefix>"`
+tags                            = ["icse", "landing-zone"]
+zones                           = 1
+vpc_names                       = ["management]
+cluster_type                    = "openshift"
+cluster_vpcs                    = ["management"]
+cluster_subnet_tier             = ["vsi"]
+cluster_zones                   = 3
+kube_version                    = "default"
+flavor                          = "bx2.16x64"
+workers_per_zone                = 2
+entitlement                     = null
+enable_transit_gateway          = false
+disable_public_service_endpoint = false
+```
+
+
+  </td>
+  </tr>
+</table>
+
+### One VPC Virtual Server Pattern
+
+<table>
+  <tr>
+    <th>Network Architecture Diagram</th><th>Pattern .tfvars</th>
+  </tr>
+  <tr>
+  <td> 
+      
+![vsi-1-zone](./.docs/images/vsi-1-zone.png) 
+      
+      
+  </td>
+    <td>
+
+
+```terraform
+ibmcloud_api_key       = `"<your api key>"`
+region                 = `"<ibm cloud region>"`
+prefix                 = `"<your architecture prefix>"`
+ssh_public_key         = `"<your ssh public key>"`
+tags                   = ["icse", "landing-zone"]
+zones                  = 1
+vpc_names              = ["management]
+vsi_vpcs               = ["management"]
+vsi_subnet_tier        = ["vsi"]
+vsi_per_subnet         = 1
+vsi_zones              = 3
+image_name             = "ibm-ubuntu-18-04-6-minimal-amd64-3"
+profile                = "bx2-2x8"
+enable_transit_gateway = false
+```
+
+
+  </td>
+  </tr>
+</table>
+
+---
 
 ## Flexible VPC Network
 
