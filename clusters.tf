@@ -34,7 +34,7 @@ locals {
 ##############################################################################
 
 module "cluster_subnets" {
-  source           = "./config_modules/get_subnets"
+  source           = "github.com/Cloud-Schematics/get-subnets"
   for_each         = toset(var.cluster_vpcs)
   subnet_zone_list = module.icse_vpc_network.vpc_networks[each.key].subnet_zone_list
   regex = join("|",

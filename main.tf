@@ -45,24 +45,3 @@ module "icse_vpc_network" {
 }
 
 ##############################################################################
-
-##############################################################################
-# Edge VPC
-##############################################################################
-
-module "edge_vpc" {
-  source                     = "./edge_vpc"
-  prefix                     = var.prefix
-  tags                       = var.tags
-  resource_group_id          = local.management_rg
-  region                     = var.region
-  zones                      = var.zones
-  add_cluster_rules          = var.add_cluster_rules
-  global_inbound_allow_list  = var.global_inbound_allow_list
-  global_outbound_allow_list = var.global_outbound_allow_list
-  global_inbound_deny_list   = var.global_inbound_deny_list
-  global_outbound_deny_list  = var.global_outbound_deny_list
-  vpn_firewall_type          = "vpn-and-waf"
-}
-
-##############################################################################

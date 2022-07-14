@@ -49,7 +49,7 @@ module "vsi_deployment_map" {
 ##############################################################################
 
 module "vsi_subnets" {
-  source           = "./config_modules/get_subnets"
+  source           = "github.com/Cloud-Schematics/get-subnets"
   for_each         = module.vsi_deployment_map.value
   subnet_zone_list = module.icse_vpc_network.vpc_networks[each.value.network].subnet_zone_list
   regex = join("|",
