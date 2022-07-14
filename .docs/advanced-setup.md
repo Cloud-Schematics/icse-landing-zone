@@ -6,14 +6,42 @@ Advanced setup options for ICSE Landing Zone.
 
 ## Table of Contents
 
-1. [Worker Pools](#worker-pools)
+1. [Customixing Network ACLs](#customizing-network-acls)
+2. [Worker Pools](#worker-pools)
     - [Detailed Worker Pools Using HCL](#detailed-worker-pools-using-hcl)
     - [Detailed Worker Pools Using JSON](#detailed-worker-pools-using-json)
-2. [Customizing VSI and VPE Security Groups](#customizing-vsi-and-vpe-security-groups)
+3. [Customizing VSI and VPE Security Groups](#customizing-vsi-and-vpe-security-groups)
     - [Custom Security Group Rule Schema](#custom-rules-schema)
-3. [Creating Custom VSI Deployments](#creating-custom-vsi-deployments)
+4. [Creating Custom VSI Deployments](#creating-custom-vsi-deployments)
     - [Custom Virtual Deployment Schema](#custom-virtual-deployment-schema)
-4. [Security Groups](#security-groups)
+5. [Security Groups](#security-groups)
+
+---
+
+## Customizing Network ACLs
+
+This template allows users to optionally use the [detailed network acl rules module](https://github.com/Cloud-Schematics/detailed-network-acl-rules/detailed_acl_rules_module) to allow for fine-grained network allow rules.
+
+Using this module, users can:
+- Add rules to VPC ACLs to deny inbound and outbound traffic on any `tcp` or `udp` ports.
+- Define any number of custom rules using HCL and the [detailed_acl_rules variable](../variables.advanced.tf.tf#35)
+- Define any number of custom rules using JSON by adding them to [acl-rules.json](../advanced_setup/json-config/template-acl-rules.json) and setting the [get_detailed_acl_rules_from_json variable](../variables.tf#L210) to true.
+    - This option is good for Schematics users, as it prevents needing to copy and paste HCL values into the GUI.
+
+### Detailed Network ACL Rule Variables
+
+
+Name                             | Description                                                                                                                                                                                                               | Default
+-------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------
+network_acls                     | Network ACLs to retrieve from data. This data is intended to be retrieved from the `vpc_network_acls` output from the ICSE Flexible VPC Network template (https://github.com/Cloud-Schematics/easy-flexible-vpc-network). | []
+network_cidr                     | CIDR block to use as the source for global outbound rules and destination for global inbound rules.                                                                                                                       | 10.0.0.0/8
+apply_new_rules_before_old_rules | When set to `true`, any new rules to be applied to existing Network ACLs will be added **before** existing rules and after any detailed rules that will be added. Otherwise, rules will be added after.                   | true
+deny_all_tcp_ports               | Deny all inbound and outbound TCP traffic on each port in this list.                                                                                                                                                      | [22, 80]
+deny_all_udp_ports               | Deny all inbound and outbound UDP traffic on each port in this list.                                                                                                                                                      | [22, 80]
+get_detailed_acl_rules_from_json | Decode local file `acl_rules.json` for the automated creation of Network ACL rules.                                                                                                                                       | true
+acl_rule_json                    | Decoded filedata for ACL rules                                                                                                                                                                                            | null
+detailed_acl_rules               | List describing network ACLs and rules to add.                                                                                                                                                                            |
+
 
 ---
 
