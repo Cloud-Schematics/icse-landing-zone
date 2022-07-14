@@ -68,16 +68,16 @@ worker_pool_names               = []
 ##############################################################################
 # (Optional) Quickstart Virtual Server Variables
 ##############################################################################
-ssh_public_key                     = null
-use_ssh_key_data                   = null
-vsi_vpcs                           = ["workload"]
-vsi_subnet_tier                    = ["vsi"]
-vsi_per_subnet                     = 1
-vsi_zones                          = 3
-image_name                         = "ibm-ubuntu-18-04-6-minimal-amd64-3"
-profile                            = "bx2-2x8"
-quickstart_vsi_inbound_allow_list  = ["10.0.0.0/8", "161.26.0.0/16"]
-quickstart_vsi_outbound_allow_list = ["0.0.0.0/0"]
+ssh_public_key                                = null
+use_ssh_key_data                              = null
+vsi_vpcs                                      = ["workload"]
+vsi_subnet_tier                               = ["vsi"]
+vsi_per_subnet                                = 1
+vsi_zones                                     = 3
+image_name                                    = "ibm-ubuntu-18-04-6-minimal-amd64-3"
+profile                                       = "bx2-2x8"
+quickstart_security_group_inbound_allow_list  = ["10.0.0.0/8", "161.26.0.0/16"]
+quickstart_security_group_outbound_allow_list = ["0.0.0.0/0"]
 ##############################################################################
 
 ##############################################################################

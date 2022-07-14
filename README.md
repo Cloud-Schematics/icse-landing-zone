@@ -10,24 +10,224 @@ Get started on IBM Cloud with a flexible landing zone for VPC Networking, Cluste
 
 ## Table of Contents
 
-1. [Flexible VPC Network](#flexible-vpc-network)
+1. [Quick Start Templates](#quick-start-templates)
+    - [3 Zone Patterns](#3-zone-patterns)
+       - [VSI Pattern](#vsi-pattern)
+       - [OpenShift and VSI Pattern](#openshift-and-vsi-pattern)
+    - [1 Zone Patterns](#1-zone-patterns)
+       - [One VPC OpenShift Pattern](#one-vpc-openshift-pattern)
+       - [One VPC Virtual Server Pattern](#one-vpc-virtual-server-pattern)
+2. [Flexible VPC Network](#flexible-vpc-network)
     - [VPC Network Variables](#vpc-network-variables)
     - [Easily Expand Your Network](#easily-expand-your-architecturefrom-one-to-three-zones)
-2. [Cloud Services](#cloud-services)
+3. [Cloud Services](#cloud-services)
     - [Cloud Service Variables](#cloud-service-variables)
-3. [VPC Clusters](#vpc-clusters)
+4. [VPC Clusters](#vpc-clusters)
     - [VPC Cluster Variables](#vpc-cluster-variables)
     - [Cluster Encryption Key](#cluster-encryption-key)
-4. [Cluster Worker Pools](#cluster-worker-pools)
-    - [Quick Start Worker Pools](#quick-start-worker-pools)
-    - [Detailed Worker Pools](#detailed-worker-pools)
-5. [Virtual Servers](#virtual-servers)
+5. [Cluster Worker Pools](#cluster-worker-pools)
+6. [Virtual Servers](#virtual-servers)
     - [Quick Start Virtual Servers](#quickstart-virtual-servers)
       - [Customizing Quick Start VSI Security Group Rules](#customizing-quick-start-vsi-security-groups)
     - [Custom Virtual Server Deployments](#custom-virtual-server-deployments)
-6. [Quickstart Variables](#quickstart-variables)
-7. [Template Variables](#template-variables)
-8. [Template Outputs](#template-outputs)
+7. [Quickstart Variables](#quickstart-variables)
+8. [Advanced Setup](#advanced-setup)
+9. [Template Variables](#template-variables)
+10. [Template Outputs](#template-outputs)
+
+---
+
+## Quick Start Templates
+
+Get started with our quick start patterns by copying the pattern tfvars into `terraform.tfvars` inside the root directory.
+
+### Clone the Repo
+
+```shell
+$ git clone https://github.com/Cloud-Schematics/icse-landing-zone.git
+```
+
+### Create Variable Store
+
+```shell
+$ cd icse-landing-zone/
+$ touch terraform.tfvars
+```
+### Copy Example Variables
+
+Choose a pattern and add the pattern `.tfvars` to `terraform.tfvars`. Fill in the following variables inside `terraform.tfvars`:
+
+Variable Name    | Value
+-----------------|---------
+ibmcloud_api_key | Your IBM Cloud Platform API Key
+region           | The IBM Cloud region to deploy your architecture
+prefix           | A unique identifier that will be prepended to the name of each resource
+ssh_public_key   | The SSH key to use when proisioning virtual servers *(Only required when provisioning VSI)*
+
+---
+
+## 3 Zone Patterns
+
+### VSI Pattern
+
+<table>
+  <tr>
+    <th>Network Architecture Diagram</th><th>Pattern .tfvars</th>
+  </tr>
+  <tr>
+    <td> 
+    
+![vsi-pattern](./.docs/images/example-vsi.png) 
+
+  </td>
+    <td>
+
+
+```terraform
+ibmcloud_api_key = `"<your api key>"`
+region           = `"<ibm cloud region>"`
+prefix           = `"<your architecture prefix>"
+ssh_public_key   = `"<your ssh public key>"`
+tags             = ["icse", "landing-zone"]
+zones            = 3
+vsi_vpcs         = ["workload", "management"]
+vsi_subnet_tier  = ["vsi"]
+vsi_per_subnet   = 1
+vsi_zones        = 3
+image_name       = "ibm-ubuntu-18-04-6-minimal-amd64-3"
+profile          = "bx2-2x8"
+```
+
+  </td>
+  </tr>
+</table>
+
+### OpenShift and VSI Pattern
+
+<table>
+  <tr>
+    <th>Network Architecture Diagram</th><th>Pattern .tfvars</th>
+  </tr>
+  <tr>
+  <td> 
+      
+![mixed-pattern](./.docs/images/example-roks.png) 
+      
+      
+  </td>
+    <td>
+
+
+```terraform
+ibmcloud_api_key    = `"<your api key>"`
+region              = `"<ibm cloud region>"`
+prefix              = `"<your architecture prefix>"`
+ssh_public_key      = `"<your ssh public key>"`
+tags                = ["icse", "landing-zone"]
+zones               = 3
+cluster_type        = "openshift"
+cluster_vpcs        = ["workload"]
+cluster_subnet_tier = ["vsi"]
+cluster_zones       = 3
+kube_version        = "default"
+flavor              = "bx2.16x64"
+workers_per_zone    = 2
+entitlement         = null
+vsi_vpcs            = ["management"]
+vsi_subnet_tier     = ["vsi"]
+vsi_per_subnet      = 1
+vsi_zones           = 3
+image_name          = "ibm-ubuntu-18-04-6-minimal-amd64-3"
+profile             = "bx2-2x8"
+disable_public_service_endpoint = false
+```
+
+
+  </td>
+  </tr>
+</table>
+
+---
+
+## 1 Zone Patterns
+
+### One VPC OpenShift Pattern
+
+<table>
+  <tr>
+    <th>Network Architecture Diagram</th><th>Pattern .tfvars</th>
+  </tr>
+  <tr>
+  <td> 
+      
+![roks-1-zone](./.docs/images/roks-1-zone.png) 
+      
+      
+  </td>
+    <td>
+
+
+```terraform
+ibmcloud_api_key                = `"<your api key>"`
+region                          = `"<ibm cloud region>"`
+prefix                          = `"<your architecture prefix>"`
+tags                            = ["icse", "landing-zone"]
+zones                           = 1
+vpc_names                       = ["management]
+cluster_type                    = "openshift"
+cluster_vpcs                    = ["management"]
+cluster_subnet_tier             = ["vsi"]
+cluster_zones                   = 3
+kube_version                    = "default"
+flavor                          = "bx2.16x64"
+workers_per_zone                = 2
+entitlement                     = null
+enable_transit_gateway          = false
+disable_public_service_endpoint = false
+```
+
+
+  </td>
+  </tr>
+</table>
+
+### One VPC Virtual Server Pattern
+
+<table>
+  <tr>
+    <th>Network Architecture Diagram</th><th>Pattern .tfvars</th>
+  </tr>
+  <tr>
+  <td> 
+      
+![vsi-1-zone](./.docs/images/vsi-1-zone.png) 
+      
+      
+  </td>
+    <td>
+
+
+```terraform
+ibmcloud_api_key       = `"<your api key>"`
+region                 = `"<ibm cloud region>"`
+prefix                 = `"<your architecture prefix>"`
+ssh_public_key         = `"<your ssh public key>"`
+tags                   = ["icse", "landing-zone"]
+zones                  = 1
+vpc_names              = ["management]
+vsi_vpcs               = ["management"]
+vsi_subnet_tier        = ["vsi"]
+vsi_per_subnet         = 1
+vsi_zones              = 3
+image_name             = "ibm-ubuntu-18-04-6-minimal-amd64-3"
+profile                = "bx2-2x8"
+enable_transit_gateway = false
+```
+
+
+  </td>
+  </tr>
+</table>
 
 ---
 
@@ -39,9 +239,9 @@ VPC Components managed by this template are:
 - VPCs
 - Subnets
 - Network Access Control Lists
-- Public Gateways
-- VPN Gateway
-- Transit Gateways & Gateway Connections
+- Public Gateways (Optional)
+- VPN Gateway (Optional)
+- Transit Gateways & Gateway Connections (Optional)
 
 ---
 
@@ -55,27 +255,16 @@ Dynamically increase zones by increasing the `zones` variables. Networks are con
 
 The following variables are used to configure the VPC Network:
 
-Name                                | Type         | Description                                                                                                                                                                                                                           | Sensitive | Default
------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | --------------------------
-zones                               | number       | Number of zones for each VPC                                                                                                                                                                                                          |           | 3
-vpc_names                           | list(string) | Names for VPCs to create. A resource group will be dynamically created for each VPC by default.                                                                                                                                       |           | ["management", "workload"]
-vpc_subnet_tiers                    | list(string) | List of names for subnet tiers to add to each VPC. For each tier, a subnet will be created in each zone of each VPC. Each tier of subnet will have a unique access control list on each VPC.                                          |           | ["vsi", "vpe"]
-vpc_subnet_tiers_add_public_gateway | list(string) | List of subnet tiers where a public gateway will be attached. Public gateways will be created in each VPC using these network tiers.                                                                                                  |           | ["vpn"]
-vpcs_add_vpn_subnet                 | list(string) | List of VPCs to add a subnet and VPN gateway. VPCs must be defined in `var.vpc_names`. A subnet and address prefix will be added in zone 1 for the VPN Gateway.                                                                       |           | ["management"]
-enable_transit_gateway              | bool         | Create transit gateway                                                                                                                                                                                                                |           | true
-transit_gateway_connections         | list(string) | List of VPC names from `var.vpc_names` to connect via a single transit gateway. To not use transit gateway, provide an empty list.                                                                                                    |           | ["management", "workload"]
-existing_resource_groups            | list(string) | To create only new resource groups, leave this variable as `[]`. <br><br> List of resource groups to use for infrastructire created. This value must be the same length as `vpc_names`.<br><br>Each resource group will correspond directly to the same index as `vpc_names`.<br><br>Leave indexes as empty string (`""`) to create new resource group (ex to use an existing resource group for only `workload`, set variable to `["", "<existing-rg-name>"]`)" | | []
-add_cluster_rules                   | bool         | Automatically add needed ACL rules to allow each network to create and manage Openshift and IKS clusters.                                                                                               |           | true
-global_inbound_allow_list           | list(string) | List of CIDR blocks where inbound traffic will be allowed. These allow rules will be added to each network acl.                                                                                         |           | [ "10.0.0.0/8", "161.26.0.0/16" ]
-global_outbound_allow_list          | list(string) | List of CIDR blocks where outbound traffic will be allowed. These allow rules will be added to each network acl.                                                                                        |           | [ "0.0.0.0/0" ]
-global_inbound_deny_list            | list(string) | List of CIDR blocks where inbound traffic will be denied. These deny rules will be added to each network acl. Deny rules will be added after all allow rules.                                           |           | [ "0.0.0.0/0" ]
-global_outbound_deny_list           | list(string) | List of CIDR blocks where outbound traffic will be denied. These deny rules will be added to each network acl. Deny rules will be added after all allow rules.                                          |           | []
-apply_new_rules_before_old_rules    | bool         | When set to `true`, any new rules to be applied to existing Network ACLs will be added **before** existing rules and after any detailed rules that will be added. Otherwise, rules will be added after. |           | true
-deny_all_tcp_ports                  | list(number) | Deny all inbound and outbound TCP traffic on each port in this list.                                                                                                                                    |           | [22, 80]
-deny_all_udp_ports                  | list(number) | Deny all inbound and outbound UDP traffic on each port in this list.                                                                                                                                    |           | [22, 80]
-get_detailed_acl_rules_from_json    | bool         | Decode local file `acl-rules.json` for the automated creation of Network ACL rules. If this is set to `false`, detailed_acl_rules will be used instead.                                                 |           | false
-detailed_acl_rules                  | See [variables.tf](./variables.tf#L222) for full details | OPTIONAL - List describing network ACLs and rules to add.                                                                                                                                               |           | []
-
+Name                                | Type         | Description                                                                                                                                                                                                                           | Default
+----------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------
+zones                               | number       | Number of zones for each VPC                                                                                                                                                                                                          | 3
+vpc_names                           | list(string) | Names for VPCs to create. A resource group will be dynamically created for each VPC by default.                                                                                                                                       | ["management", "workload"]
+existing_resource_groups            | list(string) | List of resource groups to use for infrastructire created. This value must be the same length as `vpc_names`. Each resource group will correspond directly to the same index as `vpc_names`. To create new resource groups, leave this variable as `[]`. Leave indexes as empty string to create new resource group. | []
+vpc_subnet_tiers                    | list(string) | List of names for subnet tiers to add to each VPC. For each tier, a subnet will be created in each zone of each VPC. Each tier of subnet will have a unique access control list on each VPC.                                          | ["vsi", "vpe"]
+vpc_subnet_tiers_add_public_gateway | list(string) | List of subnet tiers where a public gateway will be attached. Public gateways will be created in each VPC using these network tiers.                                                                                                  | ["vpn"]
+vpcs_add_vpn_subnet                 | list(string) | List of VPCs to add a subnet and VPN gateway. VPCs must be defined in `var.vpc_names`. A subnet and address prefix will be added in zone 1 for the VPN Gateway.                                                                       | ["management"]
+enable_transit_gateway              | bool         | Create transit gateway                                                                                                                                                                                                                | true
+transit_gateway_connections         | list(string) | List of VPC names from `var.vpc_names` to connect via a single transit gateway. To not use transit gateway, provide an empty list.                                                                                                    | ["management", "workload"]
 
 ---
 
@@ -99,17 +288,17 @@ Cloud Services that can be created by this template:
 
 The following variables are used to create cloud services:
 
-Name                                     | Type         | Description                                                                                                   | Sensitive | Default
----------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------- | --------- | -------------------------------
-existing_hs_crypto_name                  | string       | OPTIONAL - Get data for an existing HPCS instance. If you want a KMS instance to be created, leave as `null`. |           | null
-existing_hs_crypto_resource_group        | string       | OPTIONAL - Resource group name for an existing HPCS instance. Use only with `existing_hs_crypto_name`.        |           | null
-enable_atracker                          | bool         | Enable activity tracker for this pattern.                                                                     |           | true
-add_atracker_route                       | bool         | Add a route to the Atracker instance.                                                                         |           | false
-cos_use_random_suffix                    | bool         | Add a randomize suffix to the end of each Object Storage resource created in this module.                     |           | true
-create_secrets_manager                   | bool         | Create a Secrets Manager service instance.                                                                    |           | false
-enable_virtual_private_endpoints         | bool         | Enable virtual private endpoints.                                                                             |           | true
-vpe_services                             | list(string) | List of VPE Services to use to create endpoint gateways.                                                      |           | ["cloud-object-storage", "kms"]
-vpcs_create_endpoint_gateway_on_vpe_tier | list(string) | Create a Virtual Private Endpoint for supported services on each `vpe` tier of VPC names in this list.        |           | ["management", "workload"]
+Name                                     | Type         | Description                                                                                                   | Default
+---------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------
+existing_hs_crypto_name                  | string       | OPTIONAL - Get data for an existing HPCS instance. If you want a KMS instance to be created, leave as `null`. | null
+existing_hs_crypto_resource_group        | string       | OPTIONAL - Resource group name for an existing HPCS instance. Use only with `existing_hs_crypto_name`.        | null
+enable_atracker                          | bool         | Enable activity tracker for this pattern.                                                                     | true
+add_atracker_route                       | bool         | Add a route to the Atracker instance.                                                                         | false
+cos_use_random_suffix                    | bool         | Add a randomize suffix to the end of each Object Storage resource created in this module.                     | true
+create_secrets_manager                   | bool         | Create a Secrets Manager service instance.                                                                    | false
+enable_virtual_private_endpoints         | bool         | Enable virtual private endpoints.                                                                             | true
+vpe_services                             | list(string) | List of VPE Services to use to create endpoint gateways.                                                      | ["cloud-object-storage", "kms"]
+vpcs_create_endpoint_gateway_on_vpe_tier | list(string) | Create a Virtual Private Endpoint for supported services on each `vpe` tier of VPC names in this list.        | ["management", "workload"]
 
 ---
 
@@ -117,26 +306,25 @@ vpcs_create_endpoint_gateway_on_vpe_tier | list(string) | Create a Virtual Priva
 
 This template allows users to create clusters on any number of subnet tiers in any number of VPCs. The number of zones can also be scaled dynamically. Users can choose to use either Red Hat OpenShift Clusters or IBM Cloud Kubernetes Service clusters. Clusters are created using the [ICSE VPC Cluster Module](https://github.com/Cloud-Schematics/icse-cluster-module).
 
-
 OpenShift Clusters require at least 2 workers across any number of zones to be provisioned. Template will fail on plan if too few workers are provided.
 
 ---
 
 ### VPC Cluster Variables
 
-Name                            | Type         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Sensitive | Default
-------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ------------
-cluster_type                    | string       | Cluster type. Can be `iks` or `openshift`.                                                                                                                                                                                                                                                                                                                                                                                                                                          |           | openshift
-cluster_vpcs                    | list(string) | List of VPCs where clusters will be deployed.                                                                                                                                                                                                                                                                                                                                                                                                                                       |           | ["workload"]
-cluster_subnet_tier             | list(string) | List of subnet tiers where clusters will be provisioned. Clusters will be provisioned on this tier in each vpc listed in `cluster_vpcs` variable.                                                                                                                                                                                                                                                                                                                                   |           | ["vsi"]
-cluster_zones                   | number       | Number of zones to provision clusters for each VPC. At least one zone is required. Can be 1, 2, or 3 zones.                                                                                                                                                                                                                                                                                                                                                                         |           | 3
-kube_version                    | string       | Kubernetes version to use for cluster. To get available versions, use the IBM Cloud CLI command `ibmcloud ks versions`. To use the default version, leave as default. Updates to the default versions may force this to change.                                                                                                                                                                                                                                                     |           | default
-flavor                          | string       | Machine type for cluster. Use the IBM Cloud CLI command `ibmcloud ks flavors` to find valid machine types                                                                                                                                                                                                                                                                                                                                                                           |           | bx2.16x64
-workers_per_zone                | number       | Number of workers in each zone of the cluster. OpenShift requires at least 2 workers.                                                                                                                                                                                                                                                                                                                                                                                               |           | 2
-wait_till                       | string       | To avoid long wait times when you run your Terraform code, you can specify the stage when you want Terraform to mark the cluster resource creation as completed. Depending on what stage you choose, the cluster creation might not be fully completed and continues to run in the background. However, your Terraform code can continue to run without waiting for the cluster to be fully created. Supported args are `MasterNodeReady`, `OneWorkerNodeReady`, and `IngressReady` |           | IngressReady
-update_all_workers              | bool         | Update all workers to new kube version                                                                                                                                                                                                                                                                                                                                                                                                                                              |           | false
-disable_public_service_endpoint | bool         | Disable the public service endpoint on the cluster.                                                                                                                                                                                                                                                                                                                                                                                                                                 |           | false
-entitlement                     | string       | If you do not have an entitlement, leave as null. Entitlement reduces additional OCP Licence cost in OpenShift clusters. Use Cloud Pak with OCP Licence entitlement to create the OpenShift cluster. Note It is set only when the first time creation of the cluster, further modifications are not impacted Set this argument to cloud_pak only if you use the cluster with a Cloud Pak that has an OpenShift entitlement.                                                         |           | null
+Name                            | Type         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Default
+------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------
+cluster_type                    | string       | Cluster type. Can be `iks` or `openshift`.                                                                                                                                                                                                                                                                                                                                                                                                                                          | openshift
+cluster_vpcs                    | list(string) | List of VPCs where clusters will be deployed.                                                                                                                                                                                                                                                                                                                                                                                                                                       | ["workload"]
+cluster_subnet_tier             | list(string) | List of subnet tiers where clusters will be provisioned. Clusters will be provisioned on this tier in each vpc listed in `cluster_vpcs` variable.                                                                                                                                                                                                                                                                                                                                   | ["vsi"]
+cluster_zones                   | number       | Number of zones to provision clusters for each VPC. At least one zone is required. Can be 1, 2, or 3 zones.                                                                                                                                                                                                                                                                                                                                                                         | 3
+kube_version                    | string       | Kubernetes version to use for cluster. To get available versions, use the IBM Cloud CLI command `ibmcloud ks versions`. To use the default version, leave as default. Updates to the default versions may force this to change.                                                                                                                                                                                                                                                     | default
+flavor                          | string       | Machine type for cluster. Use the IBM Cloud CLI command `ibmcloud ks flavors` to find valid machine types                                                                                                                                                                                                                                                                                                                                                                           | bx2.16x64
+workers_per_zone                | number       | Number of workers in each zone of the cluster. OpenShift requires at least 2 workers.                                                                                                                                                                                                                                                                                                                                                                                               | 2
+wait_till                       | string       | To avoid long wait times when you run your Terraform code, you can specify the stage when you want Terraform to mark the cluster resource creation as completed. Depending on what stage you choose, the cluster creation might not be fully completed and continues to run in the background. However, your Terraform code can continue to run without waiting for the cluster to be fully created. Supported args are `MasterNodeReady`, `OneWorkerNodeReady`, and `IngressReady` | IngressReady
+update_all_workers              | bool         | Update all workers to new kube version                                                                                                                                                                                                                                                                                                                                                                                                                                              | false
+disable_public_service_endpoint | bool         | Disable the public service endpoint on the cluster.                                                                                                                                                                                                                                                                                                                                                                                                                                 | false
+entitlement                     | string       | If you do not have an entitlement, leave as null. Entitlement reduces additional OCP Licence cost in OpenShift clusters. Use Cloud Pak with OCP Licence entitlement to create the OpenShift cluster. Note It is set only when the first time creation of the cluster, further modifications are not impacted Set this argument to cloud_pak only if you use the cluster with a Cloud Pak that has an OpenShift entitlement.                                                         | null
 
 ---
 
@@ -148,7 +336,7 @@ By default, the cluster creates a [Key Management Key](./clusters.tf#L61) in the
 
 ## Cluster Worker Pools
 
-Cluster worker pools can be created and managed using this template. Worker pools can either be provisioned in each cluster, or managed at a detailed level. This template uses the [ICSE Cluster Worker Pool Module](github.com/Cloud-Schematics/icse-vpc-cluster-worker-pool-module) for worker pool creation.
+Cluster worker pools can be created and managed using this template. Worker pools can either be provisioned in each cluster, or managed at a detailed level by using [advanced setup](./.docs/advanced-setup.md). This template uses the [ICSE Cluster Worker Pool Module](github.com/Cloud-Schematics/icse-vpc-cluster-worker-pool-module) for worker pool creation.
 
 To ensure that worker pools can be encrypted with an encryption key, a [service authorization](./cluster_worker_pools.tf#L6) is created to allow cluster permissions to read from the Key Management source.
 
@@ -156,44 +344,7 @@ To ensure that worker pools can be encrypted with an encryption key, a [service 
 
 ### Quick Start Worker Pools
 
-To add a worker pool with the same configuration as the cluster it's being attached to, add the worker pool name to the [worker_pool_names variable](./variables.tf#L439).
-
----
-
-### Detailed Worker Pools
-
-Detailed worker pools can be configured either using HCL or JSON. To use JSON configuration set [use_worker_pool_json variable](./variables.tf#L450) to `true`.
-
----
-
-### Detailed Worker Pools Using HCL
-
-Detailed worker pools can be configured using the [detailed_worker_pools variable](./variables.tf#L456).
-
-```terraform
-variable "detailed_worker_pools" {
-  description = "OPTIONAL - Detailed worker pool configruation. Conflicts with `use_worker_pool_json`."
-  type = list(
-    object({
-      pool_name   = string # Prefix will be prepended onto the pool name
-      cluster_vpc = string # name of the vpc where the cluster is provisioned. used to reference cluster dynamically 
-      # the folowing will default to the cluster values if not otherwise provided
-      resource_group_id = optional(string)
-      flavor            = optional(string)
-      workers_per_zone  = optional(number)
-      encryption_key_id = optional(string)
-      kms_instance_guid = optional(string)
-    })
-  )
-  ...
-}
-```
-
----
-
-### Detailed Worker Pools Using JSON
-
-Worker pools can also be defined using the HCL schema by adding them into [template-worker-pools.json](./json-config/template-worker-pools.json).
+To add a worker pool with the same configuration as the cluster it's being attached to, add the worker pool name to the [worker_pool_names variable](./variables.tf#L367).
 
 ---
 
@@ -203,6 +354,8 @@ This template allows users to create virtual deployments using two methods, quic
 
 By default a [key management key](./virtual_servers.tf#L61) is created in the key management service and used to encrypt the boot volume of each virtual server.
 
+Virtual server security groups support detailed security group variables, for more information see [advanced setup documentation](./.docs/advanced-setup.md#L52).
+
 ---
 
 ### Quickstart Virtual Servers
@@ -211,157 +364,26 @@ Quickstart Virtual servers allow for users to quicky create virtual server deplo
 
 Quick start virtual server deployments can be found in [virtual_servers.tf](./virtual_servers.tf).
 
-Quick start virtual server security groups can be found in [vsi_security_groups.tf](./vsi_security_groups.tf).
-
 ### Quickstart VSI Variables
 
-Name                               | Type         | Description                                                                                                                                                                | Sensitive | Default
----------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------
-ssh_public_key                     | string       | SSH Public key to create. This SSH key will be used to create virtual servers. To use an existing key, leave as `null` and provide the key name to `use_ssh_key_data`.     |           | null
-use_ssh_key_data                   | string       | (Optional) Name of an existing SSH key to get from data. To create a new key, leave this value as null. If a key name is provided here, no other ssh keys will be created. |           | null
-vsi_vpcs                           | list(string) | List of VPCs where VSI will be deployed.                                                                                                                                   |           | ["workload"]
-vsi_subnet_tier                    | list(string) | List of subnet tiers where VSI will be provisioned. Each tier on each VPC will be attached to it's own security group.                                                     |           | ["vsi"]
-vsi_per_subnet                     | number       | Number of virtual servers to deploy on each subnet in each tier.                                                                                                           |           | 1
-vsi_zones                          | number       | Number of zones to provision VSI for each VPC. At least one zone is required. Can be 1, 2, or 3 zones.                                                                     |           | 3
-image_name                         | string       | Name of the image to use for VSI. Use the command `ibmcloud is images` to find availabled images in your region.                                                           |           | ibm-ubuntu-18-04-6-minimal-amd64-3
-profile                            | string       | Type of machine profile for VSI. Use the command `ibmcloud is instance-profiles` to find available profiles in your region                                                 |           | bx2-2x8
-quickstart_vsi_inbound_allow_list  | list(string) | List of CIDR blocks where inbound traffic will be allowed. These allow rules will be added to each VSI security group.                                                     |           | [ "10.0.0.0/8", "161.26.0.0/16" ]
-quickstart_vsi_outbound_allow_list | list(string) | List of CIDR blocks where outbound traffic will be allowed. These allow rules will be added to each VSI security group.                                                    |           | [ "0.0.0.0/0" ]
-
-### Customizing Quick Start VSI Security groups
-
-Users can customize security groups created for Quick Start VSI with detailed networking rules by using:
- - HCL using [quickstart_vsi_detailed_security_group_rules variable](./variables.tf#L577) 
- - JSON unsing the [template-quickstart-security-group-rules.json](./json-config/template-quickstart-security-group-rules.json) file by setting `use_quickstart_vsi_security_group_rules_json` to `true`.
-
-Custom virtual server deployments are managed in [vsi_custom_deployments.tf](./vsi_custom_deployments.tf)
-
-### Custom Rules Schema
-
-Both HCL and JSON detailed rules use the same schema
-
-```terraform
-variable "quickstart_vsi_detailed_security_group_rules" {
-  type = list(
-    object({
-      security_group_shortname = string # Shortname of security group ex. "workload-vsi-sg"
-      # List of security group rules to create
-      rules = list(
-        object({
-          name      = string # name
-          direction = string # inbound or outbound
-          remote    = string # CIDR block or IP address
-          # Optionally create TCP, UDP or ICMP. Only one block can be set per rule
-          tcp = optional(
-            object({
-              port_max = optional(number)
-              port_min = optional(number)
-            })
-          )
-          udp = optional(
-            object({
-              port_max = optional(number)
-              port_min = optional(number)
-            })
-          )
-          icmp = optional(
-            object({
-              type = optional(number)
-              code = optional(number)
-            })
-          )
-        })
-      )
-    })
-  )
-  default = []
-}
-```
+Name                               | Type         | Description                                                                                                                                                                | Default
+---------------------------------- | ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------
+ssh_public_key                     | string       | SSH Public key to create. This SSH key will be used to create virtual servers. To use an existing key, leave as `null` and provide the key name to `use_ssh_key_data`.     | null
+use_ssh_key_data                   | string       | (Optional) Name of an existing SSH key to get from data. To create a new key, leave this value as null. If a key name is provided here, no other ssh keys will be created. | null
+vsi_vpcs                           | list(string) | List of VPCs where VSI will be deployed.                                                                                                                                   | ["workload"]
+vsi_subnet_tier                    | list(string) | List of subnet tiers where VSI will be provisioned. Each tier on each VPC will be attached to it's own security group.                                                     | ["vsi"]
+vsi_per_subnet                     | number       | Number of virtual servers to deploy on each subnet in each tier.                                                                                                           | 1
+vsi_zones                          | number       | Number of zones to provision VSI for each VPC. At least one zone is required. Can be 1, 2, or 3 zones.                                                                     | 3
+image_name                         | string       | Name of the image to use for VSI. Use the command `ibmcloud is images` to find availabled images in your region.                                                           | ibm-ubuntu-18-04-6-minimal-amd64-3
+profile                            | string       | Type of machine profile for VSI. Use the command `ibmcloud is instance-profiles` to find available profiles in your region                                                 | bx2-2x8
+quickstart_security_group_inbound_allow_list  | list(string) | List of CIDR blocks where inbound traffic will be allowed. These allow rules will be added to each VSI security group.                                          | [ "10.0.0.0/8", "161.26.0.0/16" ]
+quickstart_security_group_outbound_allow_list | list(string) | List of CIDR blocks where outbound traffic will be allowed. These allow rules will be added to each VSI security group.                                         | [ "0.0.0.0/0" ]
 
 ---
 
-### Custom Virtual Server Deployments
+## Advanced Setup
 
-Custom virtual server workloads can be deployed using:
-- HCL and the [detailed_vsi_deployments variable](./variables.tf#L673)
-- JSON using the [template-virtual-servers.json file](./json-config/template-virtual-servers.json) and setting `use_detailed_vsi_deployment_json` to true.
-
-### Custom Virtual Deployment Schema
-
-Both HCL and JSON use the same schema for custom VSI deployments:
-
-```terraform
-variable "detailed_vsi_deployments" {
-  description = "OPTIONAL - Detailed list of virtual server deployments."
-  type = list(
-    object({
-      deployment_name                  = string                 # name to use for the deployment
-      image_name                       = string                 # name of the image
-      vsi_per_subnet                   = number                 # number of VSI per subnet to create
-      profile                          = string                 # vsi profile
-      vpc_name                         = string                 # shortname of VPC to use
-      zones                            = number                 # number of zones
-      subnet_tiers                     = list(string)           # list of subnet tiers for deployments
-      ssh_key_ids                      = list(string)           # existing ssh key ids. to use template ssh_key set to ["default"]
-      resource_group_id                = optional(string)       # if null, default to VPC rg
-      primary_security_group_ids       = optional(list(string)) # ids of existing groups to use
-      secondary_subnet_tiers           = optional(list(string)) # list of secondary subnet tiers
-      boot_volume_encryption_key       = optional(string)       # crn of key management key
-      user_data                        = optional(string)       # arbitrary user data
-      allow_ip_spoofing                = optional(bool)         # allow spoofing on primary network interface
-      add_floating_ip                  = optional(bool)         # add floating IPs to interface
-      secondary_floating_ips           = optional(list(string)) # list of secondary interfaces to add fip
-      availability_policy_host_failure = optional(string)       # availability policy
-      boot_volume_name                 = optional(string)       # override default boot volume name
-      boot_volume_size                 = optional(number)       # default boot volume size
-      dedicated_host                   = optional(string)       # dedicated host id
-      metadata_service_enabled         = optional(bool)         # enable metadata sevice
-      placement_group                  = optional(string)       # placement group id
-      default_trusted_profile_target   = optional(string)       # profile target id
-      dedicated_host_group             = optional(string)       # dedicated host id
-      ################################################
-      # List of block storage volumes. Each volume in this list will be attached
-      # to each VSI in the deployment
-      ################################################
-      block_storage_volumes = optional(
-        list(
-          object({
-            name                 = string
-            profile              = string
-            capacity             = optional(number)
-            iops                 = optional(number)
-            encryption_key       = optional(string)
-            delete_all_snapshots = optional(bool)
-          })
-        )
-      )
-      ################################################
-      create_public_load_balancer      = optional(bool)         # Create public load balancer
-      create_private_load_balancer     = optional(bool)         # Create privare load balancer
-      load_balancer_security_group_ids = optional(list(string)) # security group IDs 
-      pool_algorithm                   = optional(string)
-      pool_protocol                    = optional(string)
-      pool_health_delay                = optional(number)
-      pool_health_retries              = optional(number)
-      pool_health_timeout              = optional(number)
-      pool_health_type                 = optional(string)
-      pool_member_port                 = optional(number)
-      listener_port                    = optional(number)
-      listener_protocol                = optional(string)
-      listener_connection_limit        = optional(number)
-      ################################################
-      # List of security group names. Security group names must be specified in    #
-      # either var.security_groups or ./json-config/template-virtual-servers.json  #
-      # Servers can only be added to security groups in the same VPC               #
-      ################################################
-      primary_security_group_names       = optional(list(string)) # for primary network interface
-      load_balancer_security_group_names = optional(list(string)) # for load balancers
-      ################################################
-    })
-  )
-  default = []
-}
-```
+Users can create detailed custom ACL rules, security group rules, security groups, and virtual server deployments. For more information, see the [Advanced Setup Documentation](./.docs/advanced-setup.md).
 
 ---
 
@@ -417,8 +439,8 @@ vsi_per_subnet                               | number                           
 vsi_zones                                    | number                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Number of zones to provision VSI for each VPC. At least one zone is required. Can be 1, 2, or 3 zones.                                                                                                                                                                                                                                                                                                                                                                              |           | 3
 image_name                                   | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Name of the image to use for VSI. Use the command `ibmcloud is images` to find availabled images in your region.                                                                                                                                                                                                                                                                                                                                                                    |           | ibm-ubuntu-18-04-6-minimal-amd64-3
 profile                                      | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Type of machine profile for VSI. Use the command `ibmcloud is instance-profiles` to find available profiles in your region                                                                                                                                                                                                                                                                                                                                                          |           | bx2-2x8
-quickstart_vsi_inbound_allow_list            | list(string)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | List of CIDR blocks where inbound traffic will be allowed. These allow rules will be added to each VSI security group.                                                                                                                                                                                                                                                                                                                                                              |           | [ "10.0.0.0/8", "161.26.0.0/16" ]
-quickstart_vsi_outbound_allow_list           | list(string)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | List of CIDR blocks where outbound traffic will be allowed. These allow rules will be added to each VSI security group.                                                                                                                                                                                                                                                                                                                                                             |           | [ "0.0.0.0/0" ]
+quickstart_security_group_inbound_allow_list | list(string)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | List of CIDR blocks where inbound traffic will be allowed. These allow rules will be added to each VSI security group.                                                                                                                                                                                                                                                                                                                                                              |           | [ "10.0.0.0/8", "161.26.0.0/16" ]
+quickstart_security_group_outbound_allow_list| list(string)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | List of CIDR blocks where outbound traffic will be allowed. These allow rules will be added to each VSI security group.                                                                                                                                                                                                                                                                                                                                                             |           | [ "0.0.0.0/0" ]
 
 ---
 
@@ -479,8 +501,8 @@ vsi_per_subnet                               | number                           
 vsi_zones                                    | number                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Number of zones to provision VSI for each VPC. At least one zone is required. Can be 1, 2, or 3 zones.                                                                                                                                                                                                                                                                                                                                                                              |           | 3
 image_name                                   | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Name of the image to use for VSI. Use the command `ibmcloud is images` to find availabled images in your region.                                                                                                                                                                                                                                                                                                                                                                    |           | ibm-ubuntu-18-04-6-minimal-amd64-3
 profile                                      | string                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Type of machine profile for VSI. Use the command `ibmcloud is instance-profiles` to find available profiles in your region                                                                                                                                                                                                                                                                                                                                                          |           | bx2-2x8
-quickstart_vsi_inbound_allow_list            | list(string)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | List of CIDR blocks where inbound traffic will be allowed. These allow rules will be added to each VSI security group.                                                                                                                                                                                                                                                                                                                                                              |           | [ "10.0.0.0/8", "161.26.0.0/16" ]
-quickstart_vsi_outbound_allow_list           | list(string)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | List of CIDR blocks where outbound traffic will be allowed. These allow rules will be added to each VSI security group.                                                                                                                                                                                                                                                                                                                                                             |           | [ "0.0.0.0/0" ]
+quickstart_security_group_inbound_allow_list            | list(string)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | List of CIDR blocks where inbound traffic will be allowed. These allow rules will be added to each VSI security group.                                                                                                                                                                                                                                                                                                                                                              |           | [ "10.0.0.0/8", "161.26.0.0/16" ]
+quickstart_security_group_outbound_allow_list           | list(string)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              | List of CIDR blocks where outbound traffic will be allowed. These allow rules will be added to each VSI security group.                                                                                                                                                                                                                                                                                                                                                             |           | [ "0.0.0.0/0" ]
 use_quickstart_vsi_security_group_rules_json | bool                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Get JSON data from `template-quickstart-security-group-rules.json` and add to security groups. Conflicts with `quickstart_vsi_detailed_security_group_rules`.                                                                                                                                                                                                                                                                                                                       |           | false
 quickstart_vsi_detailed_security_group_rules | list( object({ security_group_shortname = string rules = list( object({ name = string direction = string remote = string tcp = optional( object({ port_max = optional(number) port_min = optional(number) }) ) udp = optional( object({ port_max = optional(number) port_min = optional(number) }) ) icmp = optional( object({ type = optional(number) code = optional(number) }) ) }) ) }) )                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Manage additional security group rules on quickstart VSI deployments. Conflicts with `use_quickstart_vsi_security_group_rules_json`.                                                                                                                                                                                                                                                                                                                                                |           | []
 use_security_group_json                      | bool                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Use JSON to create additional security groups. If true, groups in `var.security_groups` will not be created.                                                                                                                                                                                                                                                                                                                                                                        |           | false

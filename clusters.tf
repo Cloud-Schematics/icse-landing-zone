@@ -96,6 +96,7 @@ module "clusters" {
     private_endpoint = true
     key_id           = ibm_kms_key.cluster_key.key_id
   }
+  depends_on = [ibm_iam_authorization_policy.easy_cluster_to_kms]
 }
 
 ##############################################################################
