@@ -53,18 +53,18 @@ Get started with our quick start patterns by copying the pattern tfvars into `te
 
 
 ```terraform
-ibmcloud_api_key                    = `"<your api key>"`
-region                              = `"<ibm cloud region>"`
-prefix                              = `"<your architecture prefix>"
-tags                                = ["icse", "landing-zone"]
-zones                               = 3
-ssh_public_key                      = `"<your ssh public key>"`
-vsi_vpcs                            = ["workload", "management"]
-vsi_subnet_tier                     = ["vsi"]
-vsi_per_subnet                      = 1
-vsi_zones                           = 3
-image_name                          = "ibm-ubuntu-18-04-6-minimal-amd64-3"
-profile                             = "bx2-2x8"
+ibmcloud_api_key = `"<your api key>"`
+region           = `"<ibm cloud region>"`
+prefix           = `"<your architecture prefix>"
+tags             = ["icse", "landing-zone"]
+zones            = 3
+ssh_public_key   = `"<your ssh public key>"`
+vsi_vpcs         = ["workload", "management"]
+vsi_subnet_tier  = ["vsi"]
+vsi_per_subnet   = 1
+vsi_zones        = 3
+image_name       = "ibm-ubuntu-18-04-6-minimal-amd64-3"
+profile          = "bx2-2x8"
 ```
 
   </td>
@@ -88,27 +88,27 @@ profile                             = "bx2-2x8"
 
 
 ```terraform
-ibmcloud_api_key                = `"<your api key>"`
-region                          = `"<ibm cloud region>"`
-prefix                          = `"<your architecture prefix>"`
-tags                            = ["icse", "landing-zone"]
-zones                           = 3
-cluster_type                    = "openshift"
-cluster_vpcs                    = ["workload"]
-cluster_subnet_tier             = ["vsi"]
-cluster_zones                   = 3
-kube_version                    = "default"
-flavor                          = "bx2.16x64"
-workers_per_zone                = 2
+ibmcloud_api_key    = `"<your api key>"`
+region              = `"<ibm cloud region>"`
+prefix              = `"<your architecture prefix>"`
+tags                = ["icse", "landing-zone"]
+zones               = 3
+cluster_type        = "openshift"
+cluster_vpcs        = ["workload"]
+cluster_subnet_tier = ["vsi"]
+cluster_zones       = 3
+kube_version        = "default"
+flavor              = "bx2.16x64"
+workers_per_zone    = 2
+entitlement         = null
+ssh_public_key      = `"<your ssh public key>"`
+vsi_vpcs            = ["management"]
+vsi_subnet_tier     = ["vsi"]
+vsi_per_subnet      = 1
+vsi_zones           = 3
+image_name          = "ibm-ubuntu-18-04-6-minimal-amd64-3"
+profile             = "bx2-2x8"
 disable_public_service_endpoint = false
-entitlement                     = null
-ssh_public_key                  = `"<your ssh public key>"`
-vsi_vpcs                        = ["management"]
-vsi_subnet_tier                 = ["vsi"]
-vsi_per_subnet                  = 1
-vsi_zones                       = 3
-image_name                      = "ibm-ubuntu-18-04-6-minimal-amd64-3"
-profile                         = "bx2-2x8"
 ```
 
 
