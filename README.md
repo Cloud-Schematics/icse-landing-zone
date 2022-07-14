@@ -44,9 +44,15 @@ Get started with our quick start patterns by copying the pattern tfvars into `te
     <th>Network Architecture Diagram</th><th>Pattern .tfvars</th>
   </tr>
   <tr>
-    <td> ![vsi-pattern](./.docs/images/example-vsi.png) </td>
+    <td> 
+    
+![vsi-pattern](./.docs/images/example-vsi.png) 
+
+  </td>
     <td>
-    ```terraform
+
+
+```terraform
 ibmcloud_api_key                    = `"<your api key>"`
 region                              = `"<ibm cloud region>"`
 prefix                              = `"<your architecture prefix>"
@@ -58,8 +64,10 @@ vsi_subnet_tier                     = ["vsi"]
 vsi_per_subnet                      = 1
 vsi_zones                           = 3
 image_name                          = "ibm-ubuntu-18-04-6-minimal-amd64-3"
-profile                             = "bx2-2x8"```
-    </td>
+profile                             = "bx2-2x8"
+```
+
+  </td>
   </tr>
 </table>
 
@@ -70,9 +78,16 @@ profile                             = "bx2-2x8"```
     <th>Network Architecture Diagram</th><th>Pattern .tfvars</th>
   </tr>
   <tr>
-      <td> ![mixed-pattern](./.docs/images/example-roks.png) </td>
+  <td> 
+      
+![mixed-pattern](./.docs/images/example-roks.png) 
+      
+      
+  </td>
     <td>
-    ```terraform
+
+
+```terraform
 ibmcloud_api_key                = `"<your api key>"`
 region                          = `"<ibm cloud region>"`
 prefix                          = `"<your architecture prefix>"`
@@ -94,8 +109,10 @@ vsi_per_subnet                  = 1
 vsi_zones                       = 3
 image_name                      = "ibm-ubuntu-18-04-6-minimal-amd64-3"
 profile                         = "bx2-2x8"
-    ```
-    </td>
+```
+
+
+  </td>
   </tr>
 </table>
 
