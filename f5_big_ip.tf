@@ -93,3 +93,21 @@ module "f5" {
 }
 
 ##############################################################################
+
+##############################################################################
+# Create Transit Gateway Connection if enabled
+##############################################################################
+
+resource "ibm_tg_connection" "edge_connection" {
+  count        = var.add_edge_vpc == true && var.enable_transit_gateway == true ? 1 : 0
+  gateway      = module.icse_vpc_network.transit_gateway_id
+  network_type = "vpc"
+  name         = "${var.prefix}-edge-hub-connection"
+  network_id   = module.f5[0].vpc_crn
+  timeouts {
+    create = "30m"
+    delete = "30m"
+  }
+}
+
+##############################################################################

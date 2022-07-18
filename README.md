@@ -30,6 +30,7 @@ Get started on IBM Cloud with a flexible landing zone for VPC Networking, Cluste
     - [Quick Start Virtual Servers](#quickstart-virtual-servers)
       - [Customizing Quick Start VSI Security Group Rules](#customizing-quick-start-vsi-security-groups)
     - [Custom Virtual Server Deployments](#custom-virtual-server-deployments)
+7. [F5 BIG-IP and Edge VPC Network](#f5-big-ip-and-edge-vpc-network)
 7. [Quickstart Variables](#quickstart-variables)
 8. [Advanced Setup](#advanced-setup)
 9. [Template Variables](#template-variables)
@@ -378,6 +379,12 @@ image_name                         | string       | Name of the image to use for
 profile                            | string       | Type of machine profile for VSI. Use the command `ibmcloud is instance-profiles` to find available profiles in your region                                                 | bx2-2x8
 quickstart_security_group_inbound_allow_list  | list(string) | List of CIDR blocks where inbound traffic will be allowed. These allow rules will be added to each VSI security group.                                          | [ "10.0.0.0/8", "161.26.0.0/16" ]
 quickstart_security_group_outbound_allow_list | list(string) | List of CIDR blocks where outbound traffic will be allowed. These allow rules will be added to each VSI security group.                                         | [ "0.0.0.0/0" ]
+
+---
+
+## F5 BIG-IP and Edge VPC Network
+
+
 
 ---
 
