@@ -466,3 +466,21 @@ variable "quickstart_security_group_outbound_allow_list" {
 }
 
 ##############################################################################
+
+##############################################################################
+# Edge VPC Variables
+##############################################################################
+
+variable "add_edge_vpc" {
+  description = "Create an edge VPC network and resource group. Conflicts with `create_edge_network_on_management_vpc`."
+  type        = bool
+  default     = true
+}
+
+variable "create_edge_network_on_management_vpc" {
+  description = "Create edge network components on management VPC and in management resource group. Conflicts with `add_edge_vpc`."
+  type        = bool
+  default     = false
+}
+
+##############################################################################

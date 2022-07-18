@@ -149,3 +149,44 @@ output "security_groups" {
 }
 
 ##############################################################################
+
+##############################################################################
+# Edge Outputs
+##############################################################################
+
+output "f5_vpc_id" {
+  description = "ID of edge VPC"
+  value       = local.enable_f5 == true ? module.f5[0].vpc_id : null
+}
+
+output "f5_network_acl" {
+  description = "Network ACL name and ID"
+  value       = local.enable_f5 == true ? module.f5[0].network_acl : null
+}
+
+output "f5_public_gateways" {
+  description = "Edge VPC public gateways"
+  value       = local.enable_f5 == true ? module.f5[0].public_gateways : null
+}
+
+output "f5_subnet_zone_list" {
+  description = "List of subnet ids, cidrs, names, and zones."
+  value       = local.enable_f5 == true ? module.f5[0].subnet_zone_list : null
+}
+
+output "f5_subnet_tiers" {
+  description = "Map of subnet tiers where each key contains the subnet zone list for that tier."
+  value       = local.enable_f5 == true ? module.f5[0].subnet_tiers : null
+}
+
+output "f5_security_groups" {
+  description = "List of security groups created."
+  value       = local.enable_f5 == true ? module.f5[0].security_groups : null
+}
+
+output "f5_virtual_servers" {
+  description = "List of virtual servers created by this module."
+  value       = local.enable_f5 == true ? module.f5[0].virtual_servers : null
+}
+
+##############################################################################

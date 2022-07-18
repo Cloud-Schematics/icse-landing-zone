@@ -62,7 +62,7 @@ resource "ibm_kms_key" "cluster_key" {
   instance_id   = module.icse_vpc_network.key_management_guid
   key_name      = "${var.prefix}-cluster-key"
   standard_key  = false
-  endpoint_type = "public" # Use public endpoint to allow for creation on local machine
+  endpoint_type = var.key_management_endpoint_type
 }
 
 ##############################################################################

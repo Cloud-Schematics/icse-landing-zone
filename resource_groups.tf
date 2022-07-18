@@ -4,14 +4,15 @@
 ##############################################################################
 
 locals {
+  vpc_list_with_edge = concat(var.vpc_names, var.add_edge_vpc ? ["edge"] : [])
   # Set of resource groups to create
   create_resource_group_set = toset(
     length(var.existing_resource_groups) == 0 # If not using existing resource groups
-    ? var.vpc_names                           # use VPC name
+    ? local.vpc_list_with_edge                # use VPC name
     : [
       # Otherwise for each name in vpc names return the name if the corresponding index
       # in existing resource groups is empty string ""
-      for name in var.vpc_names :
+      for name in local.vpc_list_with_edge :
       name if var.existing_resource_groups[index(var.vpc_names, name)] == ""
     ]
   )
@@ -53,11 +54,11 @@ data "ibm_resource_group" "existing_resource_group" {
 locals {
   resource_group_vpc_map = {
     # for each network 
-    for network in var.vpc_names :
+    for network in local.vpc_list_with_edge :
     # Set name to resource group id
     (network) => (
       # If no existing resource groups
-      length(var.existing_resource_groups) == 0
+      length(var.existing_resource_groups) == 0 || network == "edge"
       # lookup network from created rgs
       ? ibm_resource_group.resource_group[network].id
       # if existing resource group is empty string
