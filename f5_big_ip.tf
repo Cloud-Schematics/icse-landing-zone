@@ -51,7 +51,15 @@ module "f5" {
   region                       = var.region
   tags                         = var.tags
   zones                        = var.zones
+  global_inbound_allow_list    = var.global_inbound_allow_list
+  global_outbound_allow_list   = var.global_outbound_allow_list
+  global_inbound_deny_list     = var.global_inbound_deny_list
+  global_outbound_deny_list    = var.global_outbound_deny_list
+  create_vpn_1_subnet_tier     = var.f5_create_vpn_1_subnet_tier
+  create_vpn_2_subnet_tier     = var.f5_create_vpn_2_subnet_tier
+  bastion_subnet_zones         = var.f5_bastion_subnet_zones
   vpn_firewall_type            = var.vpn_firewall_type
+  create_vpe_subnet_tier       = var.create_edge_network_on_management_vpc == true ? false : var.f5_create_vpe_subnet_tier
   vpe_services                 = var.vpe_services
   f5_image_name                = var.f5_image_name
   profile                      = var.f5_instance_profile

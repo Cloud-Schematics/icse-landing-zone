@@ -4,6 +4,69 @@
 #                                                                            #
 ##############################################################################
 
+##############################################################################
+# Edge VPC Variables
+##############################################################################
+
+variable "add_edge_vpc" {
+  description = "Create an edge VPC network and resource group. Conflicts with `create_edge_network_on_management_vpc`."
+  type        = bool
+  default     = true
+}
+
+variable "create_edge_network_on_management_vpc" {
+  description = "Create edge network components on management VPC and in management resource group. Conflicts with `add_edge_vpc`."
+  type        = bool
+  default     = false
+}
+
+##############################################################################
+
+##############################################################################
+# Subnet Variables
+##############################################################################
+
+variable "f5_create_vpn_1_subnet_tier" {
+  description = "Create VPN-1 subnet tier."
+  type        = bool
+  default     = true
+}
+
+variable "f5_create_vpn_2_subnet_tier" {
+  description = "Create VPN-1 subnet tier."
+  type        = bool
+  default     = true
+}
+
+variable "f5_bastion_subnet_zones" {
+  description = "Create Bastion subnet tier for each zone in this list. Bastion subnets created cannot exceed number of zones in `var.zones`. These subnets are reserved for future bastion VSI deployment."
+  type        = number
+  default     = 1
+
+  validation {
+    error_message = "Bastion subnet zones can be 0, 1, 2, or 3."
+    condition     = var.f5_bastion_subnet_zones >= 0 && var.f5_bastion_subnet_zones < 4
+  }
+}
+
+##############################################################################
+
+##############################################################################
+# VPE Services
+##############################################################################
+
+variable "f5_create_vpe_subnet_tier" {
+  description = "Create VPE subnet tier on edge VPC. Will be automatically disabled for edge deployments on the management network."
+  type        = bool
+  default     = true
+}
+
+##############################################################################
+
+##############################################################################
+# F5 Variables
+##############################################################################
+
 variable "vpn_firewall_type" {
   description = "F5 deployment type if provisioning edge VPC. Can be `full-tunnel`, `waf`, or `vpn-and-waf`."
   type        = string
@@ -15,17 +78,6 @@ variable "vpn_firewall_type" {
   }
 }
 
-variable "key_management_endpoint_type" {
-  description = "Endpoint type for encryption key provision. Can be `public` or `private`. Use `public` for provision via local machine."
-  type        = string
-  default     = "public"
-
-  validation {
-    error_message = "Key management endpoint type must be `public` or `private`."
-    condition     = contains(["public", "private"], var.key_management_endpoint_type)
-  }
-}
-
 variable "f5_image_name" {
   description = "Image name for f5 deployments. Must be null or one of `f5-bigip-15-1-5-1-0-0-14-all-1slot`,`f5-bigip-15-1-5-1-0-0-14-ltm-1slot`, `f5-bigip-16-1-2-2-0-0-28-ltm-1slot`,`f5-bigip-16-1-2-2-0-0-28-all-1slot`]."
   type        = string
@@ -33,7 +85,14 @@ variable "f5_image_name" {
 
   validation {
     error_message = "Invalid F5 image name. Must be of `f5-bigip-15-1-5-1-0-0-14-all-1slot`,`f5-bigip-15-1-5-1-0-0-14-ltm-1slot`, `f5-bigip-16-1-2-2-0-0-28-ltm-1slot`,`f5-bigip-16-1-2-2-0-0-28-all-1slot`]."
-    condition     = contains(["f5-bigip-15-1-5-1-0-0-14-all-1slot", "f5-bigip-15-1-5-1-0-0-14-ltm-1slot", "f5-bigip-16-1-2-2-0-0-28-ltm-1slot", "f5-bigip-16-1-2-2-0-0-28-all-1slot"], var.f5_image_name)
+    condition = contains(
+      [
+        "f5-bigip-15-1-5-1-0-0-14-all-1slot",
+        "f5-bigip-15-1-5-1-0-0-14-ltm-1slot",
+        "f5-bigip-16-1-2-2-0-0-28-ltm-1slot",
+        "f5-bigip-16-1-2-2-0-0-28-all-1slot"
+      ], var.f5_image_name
+    )
   }
 }
 

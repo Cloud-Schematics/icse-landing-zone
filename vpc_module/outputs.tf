@@ -97,7 +97,7 @@ output "secrets_manager_guid" {
 # Transit Gateway Outputs
 ##############################################################################
 
-output transit_gateway_id {
+output "transit_gateway_id" {
   description = "ID of the transit gateway instance if provisioned"
   value       = module.vpc.transit_gateway_id
 }

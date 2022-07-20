@@ -243,6 +243,17 @@ variable "create_secrets_manager" {
   default     = false
 }
 
+variable "key_management_endpoint_type" {
+  description = "Endpoint type for encryption key provision. Can be `public` or `private`. Use `public` for provision via local machine."
+  type        = string
+  default     = "public"
+
+  validation {
+    error_message = "Key management endpoint type must be `public` or `private`."
+    condition     = contains(["public", "private"], var.key_management_endpoint_type)
+  }
+}
+
 ##############################################################################
 
 ##############################################################################
@@ -463,24 +474,6 @@ variable "quickstart_security_group_outbound_allow_list" {
       length(var.quickstart_security_group_outbound_allow_list) == length(distinct(var.quickstart_security_group_outbound_allow_list))
     )
   }
-}
-
-##############################################################################
-
-##############################################################################
-# Edge VPC Variables
-##############################################################################
-
-variable "add_edge_vpc" {
-  description = "Create an edge VPC network and resource group. Conflicts with `create_edge_network_on_management_vpc`."
-  type        = bool
-  default     = true
-}
-
-variable "create_edge_network_on_management_vpc" {
-  description = "Create edge network components on management VPC and in management resource group. Conflicts with `add_edge_vpc`."
-  type        = bool
-  default     = false
 }
 
 ##############################################################################
