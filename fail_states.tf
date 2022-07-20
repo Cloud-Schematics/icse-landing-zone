@@ -41,6 +41,11 @@ locals {
       true if !contains(var.vpc_subnet_tiers, tier)
     ]) == 0
   )
+  # Fail if add edge and create edge true
+  CONFIGURATION_FAILURE_both_edge_and_management_vpc_provided = regex(
+    false,
+    var.add_edge_vpc == true && var.create_edge_network_on_management_vpc == true
+  )
 }
 
 ##############################################################################

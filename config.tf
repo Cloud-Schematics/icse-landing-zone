@@ -70,7 +70,7 @@ locals {
 
 module "cos_bucket_list" {
   source  = "./config_modules/concat_if_true"
-  list    = var.vpc_names
+  list    = var.add_edge_vpc == true ? concat(var.vpc_names, ["edge"]) : var.vpc_names
   add     = "atracker"
   if_true = var.enable_atracker
 }

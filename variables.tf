@@ -113,7 +113,7 @@ variable "enable_transit_gateway" {
 }
 
 variable "transit_gateway_connections" {
-  description = "List of VPC names from `var.vpc_names` to connect via a single transit gateway. To not use transit gateway, provide an empty list."
+  description = "List of VPC names from `var.vpc_names` to connect via a single transit gateway. To not use transit gateway, provide an empty list. If enabled, the edge vpc will be added automatically."
   type        = list(string)
   default     = ["management", "workload"]
 }
@@ -241,6 +241,17 @@ variable "create_secrets_manager" {
   description = "Create a Secrets Manager service instance."
   type        = bool
   default     = false
+}
+
+variable "key_management_endpoint_type" {
+  description = "Endpoint type for encryption key provision. Can be `public` or `private`. Use `public` for provision via local machine."
+  type        = string
+  default     = "public"
+
+  validation {
+    error_message = "Key management endpoint type must be `public` or `private`."
+    condition     = contains(["public", "private"], var.key_management_endpoint_type)
+  }
 }
 
 ##############################################################################
