@@ -13,6 +13,8 @@ An edge VPC network and components for F5 BIG-IP can optionally be created for y
 3. [Subnets](#subnets)
     - [Reserved Subnet Address Prefixes](#reserved-subnet-address-prefixes)
 4. [Virtual Private Endpoints](#virtual-private-endpoints)
+5. [Transit Gateway Connection](#transit-gateway-connection)
+6. [Flow Logs Collector](#flow-logs-collector)
 5. [Bastion Subnet Zones](#bastion-subnet-zones)
 6. [Virtual Servers](#virutal-servers)
 7. [F5 User Data Template Values](#f5-user-data-template-values)
@@ -22,7 +24,7 @@ An edge VPC network and components for F5 BIG-IP can optionally be created for y
     - [F5 Management Security Group](#f5-management-security-group)
     - [F5 Workload Security Group](#f5-workload-security-group)
 9. [Edge Network and F5 Variables](#edge-network-and-f5-variables)
-10. [F5 and Edge Outputs]()
+10. [F5 and Edge Outputs](#f5-and-edge-outputs)
 
 ---
 
@@ -76,6 +78,12 @@ Zone | Prefix
 ## Virtual Private Endpoints
 
 By setting the `f5_create_vpe_subnet_tier` virtual private endpoint gateways will be created on the Edge VPC for each service enabled for your main networks. This is automatically disabled when creating edge network components on the Management VPC).
+
+---
+
+## Transit Gateway Connection
+
+If a transit gateway is enabled and an edge VPC is being provisioned, a connection will be created for the edge VPC in the existing transit gateway.
 
 ---
 
