@@ -69,6 +69,7 @@ module "f5" {
   enable_f5_management_fip     = var.enable_f5_management_fip
   enable_f5_external_fip       = var.enable_f5_external_fip
   create_flow_logs_collector   = var.add_edge_vpc
+  workload_cidr_blocks         = var.workload_cidr_blocks
   flow_logs_bucket_name        = local.edge_flow_logs_bucket_name
   ssh_key_ids                  = [local.template_ssh_key_id]
   kms_guid                     = module.icse_vpc_network.key_management_guid
