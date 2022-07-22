@@ -11,7 +11,9 @@ locals {
   edge_resource_group_id = (
     var.create_edge_network_on_management_vpc == true
     ? local.management_rg
-    : local.resource_group_vpc_map["edge"]
+    : var.add_edge_vpc == true
+    ? local.resource_group_vpc_map["edge"]
+    : null
   )
 
   # Get public gateways if provisioning on management
@@ -59,6 +61,7 @@ module "f5" {
   create_vpn_2_subnet_tier     = var.f5_create_vpn_2_subnet_tier
   bastion_subnet_zones         = var.f5_bastion_subnet_zones
   vpn_firewall_type            = var.vpn_firewall_type
+  provision_f5_vsi             = var.provision_f5_vsi
   create_vpe_subnet_tier       = var.create_edge_network_on_management_vpc == true ? false : var.f5_create_vpe_subnet_tier
   vpe_services                 = var.vpe_services
   f5_image_name                = var.f5_image_name

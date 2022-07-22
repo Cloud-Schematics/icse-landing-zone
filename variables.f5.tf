@@ -20,6 +20,12 @@ variable "create_edge_network_on_management_vpc" {
   default     = false
 }
 
+variable "provision_f5_vsi" {
+  description = "Create F5 VSI on edge VPC. To provision network without virtual server deployments, set to `false`."
+  type        = bool
+  default     = true
+}
+
 ##############################################################################
 
 ##############################################################################

@@ -164,19 +164,21 @@ variable "quickstart_vsi_detailed_security_group_rules" {
 # (Optional) Detailed Security Groups
 ##############################################################################
 
+
 variable "use_security_group_json" {
   description = "Use JSON to create additional security groups. If true, groups in `var.security_groups` will not be created."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "security_groups" {
   description = "List of security groups to create."
   type = list(
     object({
-      vpc_name          = string           # VPC from var.vpc_names.
-      name              = string           # Security group name. Prefix will be prepended 
-      resource_group_id = optional(string) # groups will be added to the same resource group as VPC if null
+      vpc_name = string # VPC from var.vpc_names.
+      name     = string # Security group name. Prefix will be prepended 
+      # groups will be added to the same resource group as VPC if null
+      resource_group_id = optional(string)
       rules = list(
         object({
           name      = string
