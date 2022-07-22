@@ -55,6 +55,17 @@ variable "f5_bastion_subnet_zones" {
   }
 }
 
+variable "vpn_firewall_type" {
+  description = "F5 deployment type if provisioning edge VPC. Can be `full-tunnel`, `waf`, or `vpn-and-waf`."
+  type        = string
+  default     = "full-tunnel"
+
+  validation {
+    error_message = "Bastion type must be `full-tunnel`, `waf`, or `vpn-and-waf`."
+    condition     = contains(["full-tunnel", "waf", "vpn-and-waf"], var.vpn_firewall_type)
+  }
+}
+
 ##############################################################################
 
 ##############################################################################
@@ -73,15 +84,10 @@ variable "f5_create_vpe_subnet_tier" {
 # F5 Variables
 ##############################################################################
 
-variable "vpn_firewall_type" {
-  description = "F5 deployment type if provisioning edge VPC. Can be `full-tunnel`, `waf`, or `vpn-and-waf`."
-  type        = string
-  default     = "full-tunnel"
-
-  validation {
-    error_message = "Bastion type must be `full-tunnel`, `waf`, or `vpn-and-waf`."
-    condition     = contains(["full-tunnel", "waf", "vpn-and-waf"], var.vpn_firewall_type)
-  }
+variable "workload_cidr_blocks" {
+  description = "List of workload CIDR blocks. This is used to create security group rules for the F5 management interface."
+  type        = list(string)
+  default     = []
 }
 
 variable "f5_image_name" {
