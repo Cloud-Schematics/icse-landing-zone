@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.0.1",
+    "mocha": "^10.0.0",
     "tfxjs": "^0.6.2"
   }
 }

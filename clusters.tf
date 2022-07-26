@@ -59,6 +59,7 @@ module "cluster_subnets" {
 ##############################################################################
 
 resource "ibm_kms_key" "cluster_key" {
+  count         = length(var.cluster_vpcs) > 0 ? 1 : 0
   instance_id   = module.icse_vpc_network.key_management_guid
   key_name      = "${var.prefix}-cluster-key"
   standard_key  = false
@@ -94,7 +95,7 @@ module "clusters" {
     use_key_protect  = true
     instance_guid    = module.icse_vpc_network.key_management_guid
     private_endpoint = true
-    key_id           = ibm_kms_key.cluster_key.key_id
+    key_id           = ibm_kms_key.cluster_key[0].key_id
   }
   depends_on = [ibm_iam_authorization_policy.easy_cluster_to_kms]
 }

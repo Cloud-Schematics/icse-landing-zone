@@ -49,7 +49,7 @@ module "easy_worker_pools" {
   flavor            = var.flavor
   workers_per_zone  = var.workers_per_zone
   entitlement       = var.cluster_type == "openshift" ? var.entitlement : null
-  encryption_key_id = ibm_kms_key.cluster_key.key_id
+  encryption_key_id = ibm_kms_key.cluster_key[0].key_id
   kms_instance_guid = module.icse_vpc_network.key_management_guid
 }
 
