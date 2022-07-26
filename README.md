@@ -169,22 +169,23 @@ disable_public_service_endpoint = false
 
 
 ```terraform
-ibmcloud_api_key                = `"<your api key>"`
-region                          = `"<ibm cloud region>"`
-prefix                          = `"<your architecture prefix>"`
-tags                            = ["icse", "landing-zone"]
-zones                           = 1
-vpc_names                       = ["management]
-cluster_type                    = "openshift"
-cluster_vpcs                    = ["management"]
-cluster_subnet_tier             = ["vsi"]
-cluster_zones                   = 3
-kube_version                    = "default"
-flavor                          = "bx2.16x64"
-workers_per_zone                = 2
-entitlement                     = null
-enable_transit_gateway          = false
-disable_public_service_endpoint = false
+ibmcloud_api_key                         = `"<your api key>"`
+region                                   = `"<ibm cloud region>"`
+prefix                                   = `"<your architecture prefix>"`
+tags                                     = ["icse", "landing-zone"]
+zones                                    = 1
+vpc_names                                = ["management]
+cluster_type                             = "openshift"
+cluster_vpcs                             = ["management"]
+cluster_subnet_tier                      = ["vsi"]
+cluster_zones                            = 3
+kube_version                             = "default"
+flavor                                   = "bx2.16x64"
+workers_per_zone                         = 2
+entitlement                              = null
+enable_transit_gateway                   = false
+disable_public_service_endpoint          = false
+vpcs_create_endpoint_gateway_on_vpe_tier = ["management"]
 ```
 
 
@@ -209,20 +210,21 @@ disable_public_service_endpoint = false
 
 
 ```terraform
-ibmcloud_api_key       = `"<your api key>"`
-region                 = `"<ibm cloud region>"`
-prefix                 = `"<your architecture prefix>"`
-ssh_public_key         = `"<your ssh public key>"`
-tags                   = ["icse", "landing-zone"]
-zones                  = 1
-vpc_names              = ["management]
-vsi_vpcs               = ["management"]
-vsi_subnet_tier        = ["vsi"]
-vsi_per_subnet         = 1
-vsi_zones              = 3
-image_name             = "ibm-ubuntu-18-04-6-minimal-amd64-3"
-profile                = "bx2-2x8"
-enable_transit_gateway = false
+ibmcloud_api_key                         = `"<your api key>"`
+region                                   = `"<ibm cloud region>"`
+prefix                                   = `"<your architecture prefix>"`
+ssh_public_key                           = `"<your ssh public key>"`
+tags                                     = ["icse", "landing-zone"]
+zones                                    = 1
+vpc_names                                = ["management]
+vsi_vpcs                                 = ["management"]
+vsi_subnet_tier                          = ["vsi"]
+vsi_per_subnet                           = 1
+vsi_zones                                = 3
+image_name                               = "ibm-ubuntu-18-04-6-minimal-amd64-3"
+profile                                  = "bx2-2x8"
+enable_transit_gateway                   = false
+vpcs_create_endpoint_gateway_on_vpe_tier = ["management"]
 ```
 
 
