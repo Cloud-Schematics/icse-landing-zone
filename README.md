@@ -174,7 +174,7 @@ region                                   = `"<ibm cloud region>"`
 prefix                                   = `"<your architecture prefix>"`
 tags                                     = ["icse", "landing-zone"]
 zones                                    = 1
-vpc_names                                = ["management]
+vpc_names                                = ["management"]
 cluster_type                             = "openshift"
 cluster_vpcs                             = ["management"]
 cluster_subnet_tier                      = ["vsi"]
@@ -186,6 +186,8 @@ entitlement                              = null
 enable_transit_gateway                   = false
 disable_public_service_endpoint          = false
 vpcs_create_endpoint_gateway_on_vpe_tier = ["management"]
+vsi_vpcs                                 = []
+vsi_subnet_tier                          = []
 ```
 
 
@@ -216,7 +218,7 @@ prefix                                   = `"<your architecture prefix>"`
 ssh_public_key                           = `"<your ssh public key>"`
 tags                                     = ["icse", "landing-zone"]
 zones                                    = 1
-vpc_names                                = ["management]
+vpc_names                                = ["management"]
 vsi_vpcs                                 = ["management"]
 vsi_subnet_tier                          = ["vsi"]
 vsi_per_subnet                           = 1

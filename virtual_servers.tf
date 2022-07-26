@@ -3,7 +3,7 @@
 ##############################################################################
 
 resource "ibm_is_ssh_key" "ssh_key" {
-  count      = var.use_ssh_key_data == null ? 1 : 0
+  count      = var.use_ssh_key_data == null && length(var.vsi_vpcs) > 0 ? 1 : 0
   name       = "${var.prefix}-ssh-key"
   public_key = var.ssh_public_key
 }
@@ -15,7 +15,9 @@ data "ibm_is_ssh_key" "ssh_key" {
 
 locals {
   template_ssh_key_id = (
-    var.use_ssh_key_data == null
+    length(var.vsi_vpcs) == 0
+    ? null
+    : var.use_ssh_key_data == null
     ? ibm_is_ssh_key.ssh_key[0].id
     : data.ibm_is_ssh_key.ssh_key[0].id
   )

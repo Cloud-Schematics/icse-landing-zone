@@ -27,7 +27,7 @@ locals {
   # Fail if no VSI ssh key
   CONFIGURATION_FAILURE_no_ssh_key_provided = regex(
     "true",
-    var.vsi_vpcs == 0 || var.vsi_subnet_tier == 0 || var.vsi_per_subnet == 0
+    length(var.vsi_vpcs) == 0 || var.vsi_subnet_tier == 0 || var.vsi_per_subnet == 0
     ? true
     : var.ssh_public_key != null || var.use_ssh_key_data != null
   )
