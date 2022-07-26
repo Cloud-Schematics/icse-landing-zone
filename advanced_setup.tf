@@ -12,7 +12,7 @@ module "advanced_setup" {
   clusters                                     = module.clusters
   cluster_subnets                              = module.cluster_subnets
   kms_instance_guid                            = module.icse_vpc_network.key_management_guid
-  cluster_key_id                               = ibm_kms_key.cluster_key.key_id
+  cluster_key_id                               = length(var.worker_pool_names) > 0 ? ibm_kms_key.cluster_key[0].key_id : null
   cluster_type                                 = var.cluster_type
   flavor                                       = var.flavor
   workers_per_zone                             = var.workers_per_zone
