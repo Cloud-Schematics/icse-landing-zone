@@ -7,18 +7,13 @@ const tfx = new tfxjs(
     ibmcloud_api_key: process.env.API_KEY,
     region: "us-south",
     prefix: "at",
-    tags: ["icse", "landing-zone"],
     zones: 3,
     cluster_type: "openshift",
-    cluster_vpcs: ["workload"],
-    cluster_subnet_tier: ["vsi"],
     cluster_zones: 3,
     kube_version: "default",
     flavor: "bx2.16x64",
     workers_per_zone: 2,
     entitlement: null,
-    vsi_vpcs: ["management"],
-    vsi_subnet_tier: ["vsi"],
     vsi_per_subnet: 1,
     vsi_zones: 3,
     image_name: "ibm-ubuntu-18-04-6-minimal-amd64-3",
@@ -106,7 +101,16 @@ tfx.plan("tfx Generated Plan", () => {
           name: "us-south-1",
         },
         {
+          name: "us-south-1",
+        },
+        {
           name: "us-south-2",
+        },
+        {
+          name: "us-south-2",
+        },
+        {
+          name: "us-south-3",
         },
         {
           name: "us-south-3",
@@ -1805,14 +1809,6 @@ tfx.plan("tfx Generated Plan", () => {
       'ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["at-workload-vpe-3-kms-gateway-3-ip"]',
       {}
     )
-  );
-
-  tfx.module(
-    "Vsi Deployment Management Vsi",
-    'module.vsi_deployment["management-vsi"]',
-    tfx.resource("Image 0", "data.ibm_is_image.image[0]", {
-      name: "ibm-ubuntu-18-04-6-minimal-amd64-3",
-    })
   );
 
   tfx.module(
