@@ -81,12 +81,16 @@ resource "ibm_kms_key" "vsi_key" {
 # VSI Deployment
 ##############################################################################
 
+data "ibm_is_image" "image" {
+  name  = var.image_name
+}
+
 module "vsi_deployment" {
   source                     = "github.com/Cloud-Schematics/icse-vsi-deployment"
   for_each                   = module.vsi_deployment_map.value
   prefix                     = var.prefix
   tags                       = var.tags
-  image_name                 = var.image_name
+  image_id                   = data.ibm_is_image.image.id # Prevent force deletion when scaling
   vsi_per_subnet             = var.vsi_per_subnet
   profile                    = var.profile
   resource_group_id          = local.resource_group_vpc_map[each.value.network]
