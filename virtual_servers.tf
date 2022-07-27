@@ -90,7 +90,8 @@ module "vsi_deployment" {
   for_each                   = module.vsi_deployment_map.value
   prefix                     = var.prefix
   tags                       = var.tags
-  image_id                   = data.ibm_is_image.image.id # Prevent force deletion when scaling
+  image_id                   = true
+  image_name                 = data.ibm_is_image.image.id # Prevent force deletion when scaling
   vsi_per_subnet             = var.vsi_per_subnet
   profile                    = var.profile
   resource_group_id          = local.resource_group_vpc_map[each.value.network]
