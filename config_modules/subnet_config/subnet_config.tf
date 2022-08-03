@@ -131,7 +131,7 @@ locals {
     "zone-${zone}" => (
       zone == 1 && length(var.vpcs_add_vpn_subnet) > 0 && contains(var.vpcs_add_vpn_subnet, var.vpc_name)
       ? true
-      : length(var.vpc_subnet_tiers_add_public_gateway) > 0 && zone > var.zones
+      : length(var.vpc_subnet_tiers_add_public_gateway) > 0 && zone <= var.zones
     )
   }
 

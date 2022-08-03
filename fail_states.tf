@@ -46,6 +46,32 @@ locals {
     false,
     var.add_edge_vpc == true && var.create_edge_network_on_management_vpc == true
   )
+
+  # fail if teleport vpc not found
+  CONFIGURATION_FAILURE_teleport_vpc_not_found = regex(
+    true,
+    var.enable_teleport == false || (    # if teleport is disabled or
+      var.enable_teleport == true        # if teleport is eabled 
+      && var.f5_bastion_subnet_zones > 0 # At lease one bastion zone is provided
+      # and edge VPC is enabled
+      && (var.add_edge_vpc == true || var.create_edge_network_on_management_vpc == true)
+    )
+    ? true
+    : contains(var.vpc_names, var.teleport_vpc)
+  )
+
+  # fail if teleport subnet tier not found
+  CONFIGURATION_FAILURE_teleport_vsi_tier_not_found_in_tier_list = regex(
+    "true",
+    var.enable_teleport == false || (    # if teleport is disabled or
+      var.enable_teleport == true        # if teleport is eabled 
+      && var.f5_bastion_subnet_zones > 0 # At lease one bastion zone is provided
+      # and edge VPC is enabled
+      && (var.add_edge_vpc == true || var.create_edge_network_on_management_vpc == true)
+    )
+    ? true
+    : contains(var.vpc_subnet_tiers, var.teleport_deployment_tier)
+  )
 }
 
 ##############################################################################

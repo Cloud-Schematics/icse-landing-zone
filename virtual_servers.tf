@@ -82,7 +82,7 @@ resource "ibm_kms_key" "vsi_key" {
 ##############################################################################
 
 data "ibm_is_image" "image" {
-  name  = var.image_name
+  name = var.image_name
 }
 
 module "vsi_deployment" {
