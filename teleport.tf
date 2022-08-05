@@ -1,8 +1,9 @@
 ##############################################################################
-# Get Teleport Subnets
+# Teleport Locals
 ##############################################################################
 
 locals {
+  # VPC Network where teleport instances will be provisioned
   teleport_network = (
     var.add_edge_vpc == true && var.create_edge_network_on_management_vpc == true # if edge on management
     ? var.vpc_names[0]
@@ -11,16 +12,30 @@ locals {
     : var.teleport_vpc
   )
 
+  # Resource group where teleport instances will be provisioned
   teleport_resource_group = (
     var.add_edge_vpc == true || var.create_edge_network_on_management_vpc == true # if edge is enabled
     ? local.edge_resource_group_id                                                # use edge rg
     : local.resource_group_vpc_map[var.teleport_vpc]                              # otherwise use vpc rg
   )
+
+  # Teleport VPC ID
+  teleport_vpc_id = (
+    local.teleport_network == "edge"
+    ? module.f5[0].vpc_id
+    : module.icse_vpc_network.vpc_networks[local.teleport_network].id
+  )
 }
 
+##############################################################################
+
+##############################################################################
+# Get Teleport Subnets
+##############################################################################
+
 module "teleport_vsi_subnets" {
-  count            = var.enable_teleport == true ? 1 : 0
-  source           = "github.com/Cloud-Schematics/get-subnets"
+  count  = var.enable_teleport == true ? 1 : 0
+  source = "github.com/Cloud-Schematics/get-subnets"
   subnet_zone_list = (
     local.teleport_network == "edge"
     ? module.f5[0].subnet_zone_list
@@ -63,6 +78,50 @@ resource "ibm_kms_key" "teleport_bucket_key" {
 ##############################################################################
 
 ##############################################################################
+# Teleport Security Group
+##############################################################################
+
+module "teleport_security_group" {
+  count  = var.enable_teleport == true ? 1 : 0
+  source = "github.com/Cloud-Schematics/vpc-security-group-module"
+  prefix = var.prefix
+  tags   = var.tags
+  vpc_id = local.teleport_vpc_id
+  security_groups = [
+    {
+      name = "teleport-bastion-sg"
+      rules = flatten([
+        [
+          {
+            name      = "allow-all-outbound"
+            direction = "outbound"
+            remote    = "0.0.0.0/0"
+            tcp = {
+              port_max = null
+              port_min = null
+            }
+          }
+        ],
+        [
+          for port in var.teleport_allow_tcp_ports_inbound :
+          {
+            name      = "allow-all-${port}-inbound"
+            direction = "inbound"
+            remote    = "0.0.0.0/0"
+            tcp = {
+              port_min = port
+              port_max = port
+            }
+          }
+        ]
+      ])
+    }
+  ]
+}
+
+##############################################################################
+
+##############################################################################
 # Teleport Deployment
 ##############################################################################
 
@@ -84,7 +143,7 @@ module "teleport_vsi" {
   ssh_key_ids                = [local.template_ssh_key_id]
   profile                    = var.teleport_profile
   image_name                 = var.teleport_image_name
-  primary_security_group_ids = null
+  primary_security_group_ids = [module.teleport_security_group[0].groups[0].id]
   add_floating_ip            = var.teleport_add_floating_ip
   teleport_license           = var.teleport_license
   https_cert                 = var.https_cert
@@ -94,15 +153,7 @@ module "teleport_vsi" {
   teleport_version           = var.teleport_version
   message_of_the_day         = var.message_of_the_day
   claims_to_roles            = var.claims_to_roles
-  primary_interface_security_group = {
-    create = false
-    rules  = []
-  }
-  vpc_id = (
-    local.teleport_network == "edge"
-    ? module.f5[0].vpc_id
-    : module.icse_vpc_network.vpc_networks[local.teleport_network].id
-  )
+  vpc_id                     = local.teleport_vpc_id
 }
 
 ##############################################################################

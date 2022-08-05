@@ -136,7 +136,7 @@ variable "tmos_admin_password" {
   description = "admin account password for the F5 BIG-IP instance"
   type        = string
   sensitive   = true
-  default     = null
+  default     = "this1isanExample"
 
   validation {
     error_message = "Value for tmos_password must be at least 15 characters, contain one numeric, one uppercase, and one lowercase character."

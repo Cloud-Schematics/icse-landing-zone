@@ -85,6 +85,12 @@ variable "teleport_add_floating_ip" {
   default     = false
 }
 
+variable "teleport_allow_tcp_ports_inbound" {
+  description = "List of TCP ports where all inbound traffic to the teleport instance will be allowed."
+  type        = list(number)
+  default     = [443]
+}
+
 variable "teleport_license" {
   description = "The contents of the PEM license file"
   type        = string

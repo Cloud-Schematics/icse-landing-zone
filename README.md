@@ -31,10 +31,11 @@ Get started on IBM Cloud with a flexible landing zone for VPC Networking, Cluste
       - [Customizing Quick Start VSI Security Group Rules](#customizing-quick-start-vsi-security-groups)
     - [Custom Virtual Server Deployments](#custom-virtual-server-deployments)
 7. [F5 BIG-IP and Edge VPC Network](#f5-big-ip-and-edge-vpc-network)
-7. [Quickstart Variables](#quickstart-variables)
-8. [Advanced Setup](#advanced-setup)
-9. [Template Variables](#template-variables)
-10. [Template Outputs](#template-outputs)
+8. [Teleport Virtual Servers](#teleport-virtual-servers)
+9. [Quickstart Variables](#quickstart-variables)
+10. [Advanced Setup](#advanced-setup)
+11. [Template Variables](#template-variables)
+12. [Template Outputs](#template-outputs)
 
 ---
 
@@ -394,9 +395,19 @@ An edge network and F5 BIG-IP virtual servers can optionally be added to a new `
 
 Variables for setup of F5 and the edge VPC network can be found in [variables.f5.tf](./variables.f5.tf).
 
-To see the full documentation for f5 deployments, find the documentation [here]()
+To see the full documentation for f5 deployments, find the documentation [here](https://github.com/Cloud-Schematics/icse-f5-deployment-module)
 
 ![edge-f5-network](.docs/images/edge-f5.png)
+
+---
+
+## Teleport Virtual Servers
+
+Optionally users can provision bastion servers with Teleport installed. This template uses the [ICSE Teleport Deployment Module](https://github.com/terraform-ibm-modules/terraform-teleport-deployment).
+
+Users can provision bastion hosts on either the edge network bastion subnet tier, or on a specific VPC and Subnet tier.
+
+Variables for the setup of teleport instances can be found in [variables.teleport.tf](./variables.teleport.tf). 
 
 ---
 
@@ -563,7 +574,26 @@ tgstandby_url                                | string                       | Th
 tgrefresh_url                                | string                       | The URL to POST L3 addresses when tgrefresh is triggered                                                                                                                                                     |           | null
 enable_f5_management_fip                     | bool                         | Enable F5 management interface floating IP. Conflicts with `enable_f5_external_fip`, VSI can only have one floating IP per instance.                                                                         |           | false
 enable_f5_external_fip                       | bool                         | Enable F5 external interface floating IP. Conflicts with `enable_f5_management_fip`, VSI can only have one floating IP per instance.                                                                         |           | false
-
+enable_teleport                  | bool                                                    | Enable teleport VSI                                                                                                                              |           | true
+use_f5_bastion_subnets           | bool                                                    | Create teleport instances on the edge network subnets reserved for bastion hosts. Instances will only be created if `enable_teleport` is `true`. |           | true
+teleport_vpc                     | string                                                  | Shortname of the VPC where teleport VSI will be provisioned. This value is ignored when `use_f5_bastion_subnets` is true.                        |           | management
+teleport_deployment_tier         | string                                                  | Subnet tier where teleport VSI will be deployed. This value is ignored when `use_f5_bastion_subnets` is true.                                    |           | vsi
+teleport_zones                   | number                                                  | Number of zones where teleport VSI will be provisioned. This value is ignored when `use_f5_bastion_subnets` is `true`.                           |           | 1
+appid_use_data                   | bool                                                    | Get App ID information from data.                                                                                                                |           | false
+appid_name                       | string                                                  | App ID name. Use only if `use_data` is true.                                                                                                     |           | null
+appid_resource_group_id          | string                                                  | App ID resource group. Use only if `use_data` is true.                                                                                           |           | null
+teleport_profile                 | string                                                  | Machine type for Teleport VSI instances. Use the IBM Cloud CLI command `ibmcloud is instance-profiles` to see available image profiles.          |           | cx2-4x8
+teleport_image_name              | string                                                  | Teleport VSI image name. Use the IBM Cloud CLI command `ibmcloud is images` to see availabled images.                                            |           | ibm-ubuntu-18-04-6-minimal-amd64-2
+teleport_add_floating_ip         | bool                                                    | Add a floating IP to the primary network interface for each server in the deployment.                                                            |           | false
+teleport_allow_tcp_ports_inbound | list(number)                                            | List of TCP ports where all inbound traffic to the teleport instance will be allowed.                                                            |           | [443]
+teleport_license                 | string                                                  | The contents of the PEM license file                                                                                                             |           | null
+https_cert                       | string                                                  | The https certificate used by bastion host for teleport                                                                                          |           | null
+https_key                        | string                                                  | The https private key used by bastion host for teleport                                                                                          |           | null }
+teleport_hostname                | string                                                  | The name of the instance or bastion host                                                                                                         |           | null
+teleport_domain                  | string                                                  | The domain of the bastion host                                                                                                                   |           | domain.domain
+teleport_version                 | string                                                  | Version of Teleport Enterprise to use                                                                                                            |           | 7.1.0
+message_of_the_day               | string                                                  | Banner message that is exposed to the user at authentication time                                                                                |           | null
+claims_to_roles                  | list( object({ email = string roles = list(string) }) ) | A list of maps that contain the user email and the role you want to associate with them                                                          |           | []
 
 ---
 
