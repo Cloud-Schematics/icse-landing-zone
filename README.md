@@ -28,7 +28,6 @@ Get started on IBM Cloud with a flexible landing zone for VPC Networking, Cluste
 5. [Cluster Worker Pools](#cluster-worker-pools)
 6. [Virtual Servers](#virtual-servers)
     - [Quick Start Virtual Servers](#quickstart-virtual-servers)
-      - [Customizing Quick Start VSI Security Group Rules](#customizing-quick-start-vsi-security-groups)
     - [Custom Virtual Server Deployments](#custom-virtual-server-deployments)
 7. [F5 BIG-IP and Edge VPC Network](#f5-big-ip-and-edge-vpc-network)
 8. [Teleport Virtual Servers](#teleport-virtual-servers)

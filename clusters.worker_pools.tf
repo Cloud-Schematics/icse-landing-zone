@@ -11,8 +11,8 @@ resource "ibm_iam_authorization_policy" "easy_cluster_to_kms" {
     : toset([])
   )
   source_service_name         = "containers-kubernetes"
-  target_service_name         = "kms"
-  target_resource_instance_id = var.existing_hs_crypto_name == null ? module.icse_vpc_network.key_management_guid : "hs-crypto"
+  target_service_name         = var.existing_hs_crypto_name == null ? "kms" : "hs-crypto"
+  target_resource_instance_id = module.icse_vpc_network.key_management_guid
   roles                       = ["Reader", "Authorization Delegator"]
   description                 = "Allow cluster worker pools to be encrypted by Key Management instance."
 }

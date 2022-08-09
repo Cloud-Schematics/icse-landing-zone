@@ -28,6 +28,7 @@ module "icse_vpc_network" {
   tags                           = var.tags
   enable_transit_gateway         = var.enable_transit_gateway
   transit_gateway_connections    = var.transit_gateway_connections
+  enable_flow_logs               = var.enable_flow_logs
   vpcs                           = local.config.vpcs
   transit_gateway_resource_group = local.management_rg
   key_management                 = local.config.key_management

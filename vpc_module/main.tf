@@ -42,6 +42,7 @@ module "services" {
 ##############################################################################
 
 module "flow_logs" {
+  count              = var.enable_flow_logs == true ? 1 : 0
   source             = "github.com/Cloud-Schematics/icse-flow-logs-module"
   prefix             = var.prefix
   cos_instances      = var.enable_flow_logs == true ? module.services.cos_instances : []

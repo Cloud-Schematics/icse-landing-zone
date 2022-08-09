@@ -210,7 +210,7 @@ variable "existing_hs_crypto_resource_group" {
 ##############################################################################
 
 ##############################################################################
-# Atracker Variables
+# Observability Variables
 ##############################################################################
 
 variable "enable_atracker" {
@@ -223,6 +223,12 @@ variable "add_atracker_route" {
   description = "Add a route to the Atracker instance."
   type        = bool
   default     = false
+}
+
+variable "enable_flow_logs" {
+  description = "Create flow logs instances for VPCs."
+  type        = bool
+  default     = true
 }
 
 ##############################################################################
