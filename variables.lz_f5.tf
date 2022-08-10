@@ -11,7 +11,7 @@
 variable "add_edge_vpc" {
   description = "Create an edge VPC network and resource group. Conflicts with `create_edge_network_on_management_vpc`."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "create_edge_network_on_management_vpc" {
@@ -23,7 +23,7 @@ variable "create_edge_network_on_management_vpc" {
 variable "provision_f5_vsi" {
   description = "Create F5 VSI on edge VPC. To provision network without virtual server deployments, set to `false`."
   type        = bool
-  default     = true
+  default     = false
 }
 
 ##############################################################################
