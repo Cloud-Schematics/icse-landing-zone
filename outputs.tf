@@ -197,17 +197,17 @@ output "f5_virtual_servers" {
 
 output "appid_guid" {
   description = "App ID GUID"
-  value       = module.teleport_vsi[0].appid_guid
+  value       = var.enable_teleport == true ? module.teleport_vsi[0].appid_guid : null
 }
 
 output "appid_crn" {
   description = "App ID CRN"
-  value       = module.teleport_vsi[0].appid_crn
+  value       = var.enable_teleport == true ? module.teleport_vsi[0].appid_crn : null
 }
 
 output "appid_redirect_urls" {
   description = "List of App ID redirect URLs"
-  value       = module.teleport_vsi[0].appid_redirect_urls
+  value       = var.enable_teleport == true ? module.teleport_vsi[0].appid_redirect_urls : null
 }
 
 ##############################################################################
@@ -218,7 +218,7 @@ output "appid_redirect_urls" {
 
 output "teleport_virtual_servers" {
   description = "List of VSI IDs, Names, Primary IPV4 addresses, floating IPs, and secondary floating IPs"
-  value       = module.teleport_vsi[0].virtual_servers
+  value       = var.enable_teleport == true ? module.teleport_vsi[0].virtual_servers : null
 }
 
 ##############################################################################

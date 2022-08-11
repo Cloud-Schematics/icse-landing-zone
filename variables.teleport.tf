@@ -5,7 +5,7 @@
 variable "enable_teleport" {
   description = "Enable teleport VSI"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "use_f5_bastion_subnets" {
